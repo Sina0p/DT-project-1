@@ -11,10 +11,27 @@ public class View
         if (Answer_for_to_do == "4")
         {
             Console.WriteLine("ok 4");
+            //code hadnling voor 4
+        }
+        else if (Answer_for_to_do == "3")
+        {
+            Console.WriteLine("ok 3");
+            //code hadnling voor 3
+        }
+        else if (Answer_for_to_do == "2")
+        {
+            Console.WriteLine("ok 2");
+            //code hadnling voor 2
+        }
+        else if (Answer_for_to_do == "1")
+        {
+            Console.WriteLine("ok 1");
+            //code hadnling voor 1
         }
         else
         {
-            Console.WriteLine("ok ");
+            Console.WriteLine("wrong input");
+            //code hadnling voor verkeerde input
         }
     }
 }
