@@ -16,12 +16,12 @@ class List
         return -1;
     }
 
-    public Task[] DeleteTask(string taskToDelete)
+    public bool DeleteTask(string taskToDelete)
     {
         int index = FindTaskIndex(taskToDelete);
 
         if (index == -1)
-            return todo;
+            return false;
 
         for (int i = index; i < todo.Length - 1; i++)
         {
@@ -29,7 +29,7 @@ class List
         }
 
         todo[todo.Length - 1] = null;
-        return todo;
+        return true;
     }
 
 }
