@@ -52,8 +52,16 @@ public class View
         }
         else if (Answer_for_to_do == "1")
         {
-            Console.WriteLine("ok 1");
-            //code hadnling voor 1
+            Console.WriteLine("What would yo like to add");
+            var add = new Service(tasks);
+            string Task_to_add = Console.ReadLine();
+            if(add.AddTask(Task_to_add))
+            {
+                Console.WriteLine($"You have added {Task_to_add}");
+                return;
+            }
+            Console.WriteLine("No space left to add a task");
+            return;
         }
         else
         {

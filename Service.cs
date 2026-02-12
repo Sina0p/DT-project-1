@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 public class Service
 {
     private List<Task> tasks;
@@ -52,6 +55,21 @@ public class Service
 
         todo[todo.Length - 1] = null;
         return true;
+    }
+
+    public bool AddTask(string name)
+    {
+        for(int i = 0; i < todo.Length; ++i)
+        {
+            if(todo[i] == null)
+            {
+                Task taskToAdd = new Task(i, name);
+                todo[i] = taskToAdd;
+                // Console.WriteLine($"Id: {todo[i].Id}, Name: {todo[i].Name}, Status: {todo[i].Status}");
+                return true;
+            }
+        }
+        return false;
     }
 
 }
