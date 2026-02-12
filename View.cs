@@ -1,3 +1,5 @@
+using System.ComponentModel.Design;
+
 public class View
 {
     private Service service;
@@ -39,8 +41,14 @@ public class View
         }
         else if (Answer_for_to_do == "2")
         {
-            Console.WriteLine("ok 2");
-            //code hadnling voor 2
+            Console.WriteLine("What do you want to delete");
+            var delete = new List();
+            string Task_to_delete = Console.ReadLine();
+            if(delete.DeleteTask(Task_to_delete))
+            {
+                Console.WriteLine($"You have deleted {Task_to_delete}");
+            }
+            Console.WriteLine("This task does not exist");
         }
         else if (Answer_for_to_do == "1")
         {
