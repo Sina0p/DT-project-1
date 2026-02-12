@@ -1,5 +1,20 @@
 public class View
 {
+    public List<Task> tasks = new List<Task>();
+
+    public void DisplayTasks()
+    {
+        Console.WriteLine("All tasks:");
+
+        {
+            foreach (Task task in tasks)
+            {
+                string status = task.Status ? "Done" : "Not Done";
+                Console.WriteLine($"{task.Name} {status}");
+            }
+        }
+    }
+
     public void to_do_list()
     {
         Console.WriteLine("1. Add Task");
@@ -15,7 +30,7 @@ public class View
         }
         else if (Answer_for_to_do == "3")
         {
-            Console.WriteLine("ok 3");
+            DisplayTasks();
             //code hadnling voor 3
         }
         else if (Answer_for_to_do == "2")
