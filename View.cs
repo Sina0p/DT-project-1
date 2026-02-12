@@ -42,7 +42,7 @@ public class View
         else if (Answer_for_to_do == "2")
         {
             Console.WriteLine("What do you want to delete");
-            var delete = new List();
+            var delete = new Service(tasks);
             string Task_to_delete = Console.ReadLine();
             if(delete.DeleteTask(Task_to_delete))
             {
