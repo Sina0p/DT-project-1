@@ -1,17 +1,35 @@
 
 class List
 {
-    Task[] todo = new Task[10];
+    Task[] todo = new Task[99];
 
-    public string[] DeleteTask(string taskToDelete)
+
+    public int FindTaskIndex(string taskToDelete)
     {
-        foreach(Task task in todo)
+        for (int i = 0; i < todo.Length; i++)
         {
-            if (taskToDelete == task.Name)
+            if (todo[i] != null && todo[i].Name == taskToDelete)
             {
-                
+                return i;
             }
         }
-        return null;
+        return -1;
     }
+
+    public Task[] DeleteTask(string taskToDelete)
+    {
+        int index = FindTaskIndex(taskToDelete);
+
+        if (index == -1)
+            return todo;
+
+        for (int i = index; i < todo.Length - 1; i++)
+        {
+            todo[i] = todo[i + 1];
+        }
+
+        todo[todo.Length - 1] = null;
+        return todo;
+    }
+
 }
