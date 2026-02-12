@@ -1,8 +1,30 @@
-
-class List
+public class Service
 {
-    Task[] todo = new Task[99];
+    private List<Task> tasks;
+    private View view;
 
+    public Service(List<Task> tasks)
+    {
+        this.tasks = tasks;
+    }
+
+    public void ToggleTask(int id)
+    {
+        foreach (Task task in tasks)
+        {
+            if (task.Id == id)
+            {
+                task.Status = !task.Status;
+
+                view.DisplayTasks();
+                Console.WriteLine($"\n Status of {task.Name} toggled");
+
+                return;
+            }
+        }
+    }
+
+    Task[] todo = new Task[99];
 
     public int FindTaskIndex(string taskToDelete)
     {

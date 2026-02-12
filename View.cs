@@ -1,20 +1,21 @@
 public class View
 {
+    private Service service;
     public List<Task> tasks = new List<Task>();
-
+    
     public void DisplayTasks()
     {
-        Console.WriteLine("All tasks:");
+        
+        Console.WriteLine("All tasks:\n");
 
         {
             foreach (Task task in tasks)
             {
                 string status = task.Status ? "Done" : "Not Done";
-                Console.WriteLine($"{task.Name} {status}");
+                Console.WriteLine($"{task.Name} : ({status})");
             }
         }
     }
-
     public void to_do_list()
     {
         Console.WriteLine("1. Add Task");
@@ -30,7 +31,10 @@ public class View
         }
         else if (Answer_for_to_do == "3")
         {
+            Console.Clear();
             DisplayTasks();
+            Console.WriteLine("\n Type task integer to toggle a task");
+            service.ToggleTask(int.Parse(Console.ReadLine()));
             //code hadnling voor 3
         }
         else if (Answer_for_to_do == "2")
