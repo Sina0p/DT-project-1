@@ -1,0 +1,15 @@
+C:\DT1\DT-project-1\bin\Debug\net9.0\DT-project-1.exe
+C:\DT1\DT-project-1\bin\Debug\net9.0\DT-project-1.deps.json
+C:\DT1\DT-project-1\bin\Debug\net9.0\DT-project-1.runtimeconfig.json
+C:\DT1\DT-project-1\bin\Debug\net9.0\DT-project-1.dll
+C:\DT1\DT-project-1\bin\Debug\net9.0\DT-project-1.pdb
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.GeneratedMSBuildEditorConfig.editorconfig
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.AssemblyInfoInputs.cache
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.AssemblyInfo.cs
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.csproj.CoreCompileInputs.cache
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.sourcelink.json
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.dll
+C:\DT1\DT-project-1\obj\Debug\net9.0\refint\DT-project-1.dll
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.pdb
+C:\DT1\DT-project-1\obj\Debug\net9.0\DT-project-1.genruntimeconfig.cache
+C:\DT1\DT-project-1\obj\Debug\net9.0\ref\DT-project-1.dll
