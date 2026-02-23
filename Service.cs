@@ -1,33 +1,20 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
 public class Service
 {
-    private List<Task> tasks;
-    private View view;
-
-    public Service(List<Task> tasks)
-    {
-        this.tasks = tasks;
-    }
+    Task[] todo = new Task[99];
 
     public void ToggleTask(int id)
     {
-        foreach (Task task in tasks)
+        foreach (Task task in todo)
         {
-            if (task.Id == id)
+            if (task != null && task.Id == id)
             {
                 task.Status = !task.Status;
-
-                view.DisplayTasks();
+                DisplayTasks();
                 Console.WriteLine($"\n Status of {task.Name} toggled");
-
                 return;
             }
         }
     }
-
-    Task[] todo = new Task[99];
 
     public int FindTaskIndex(string taskToDelete)
     {
@@ -39,6 +26,21 @@ public class Service
             }
         }
         return -1;
+    }
+    
+    public bool AddTask(string name)
+    {
+        for(int i = 0; i < todo.Length; ++i)
+        {
+            if(todo[i] == null)
+            {
+                Task taskToAdd = new Task(i, name);
+                todo[i] = taskToAdd;
+                // Console.WriteLine($"Id: {todo[i].Id}, Name: {todo[i].Name}, Status: {todo[i].Status}");
+                return true;
+            }
+        }
+        return false;
     }
 
     public bool DeleteTask(string taskToDelete)
@@ -57,19 +59,17 @@ public class Service
         return true;
     }
 
-    public bool AddTask(string name)
+    public void DisplayTasks()
     {
-        for(int i = 0; i < todo.Length; ++i)
+        Console.WriteLine("All tasks:\n");
+
+        foreach (Task task in todo)
         {
-            if(todo[i] == null)
+            if (task != null)
             {
-                Task taskToAdd = new Task(i, name);
-                todo[i] = taskToAdd;
-                // Console.WriteLine($"Id: {todo[i].Id}, Name: {todo[i].Name}, Status: {todo[i].Status}");
-                return true;
+                string status = task.Status ? "Done" : "Not Done";
+                Console.WriteLine($"{task.Id}. {task.Name} : ({status})");
             }
         }
-        return false;
     }
-
 }

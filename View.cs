@@ -1,28 +1,13 @@
 using System.ComponentModel.Design;
 
 public class View
-{
-    private Service service;
-    public List<Task> tasks = new List<Task>();
-    public bool exit = false;
-    
-    public void DisplayTasks()
-    {
-        
-        Console.WriteLine("All tasks:\n");
-
-        {
-            foreach (Task task in tasks)
-            {
-                string status = task.Status ? "Done" : "Not Done";
-                Console.WriteLine($"{task.Name} : ({status})");
-            }
-        }
-    }
-
+{   
+    private Service service = new Service();
     public void to_do_list()
     {
-        while(!exit)
+        bool ongoing = true;
+
+        while (ongoing)
         {
             Console.WriteLine("1. Add Task");
             Console.WriteLine("2. Remove Task");
@@ -32,12 +17,13 @@ public class View
 
             if (Answer_for_to_do == "4")
             {
-                exit = true;
+                Console.WriteLine("ok 4");
+                ongoing = false;
             }
             else if (Answer_for_to_do == "3")
             {
                 Console.Clear();
-                DisplayTasks();
+                service.DisplayTasks();
                 Console.WriteLine("\n Type task integer to toggle a task");
                 service.ToggleTask(int.Parse(Console.ReadLine()));
                 //code hadnling voor 3
@@ -45,34 +31,34 @@ public class View
             else if (Answer_for_to_do == "2")
             {
                 Console.WriteLine("What do you want to delete");
-                var delete = new Service(tasks);
                 string Task_to_delete = Console.ReadLine();
-                if(delete.DeleteTask(Task_to_delete))
+                if (service.DeleteTask(Task_to_delete))
                 {
                     Console.WriteLine($"You have deleted {Task_to_delete}");
-                    continue;
                 }
-                Console.WriteLine("This task does not exist");
-                continue;
+                else
+                {
+                    Console.WriteLine("This task does not exist");
+                }
             }
             else if (Answer_for_to_do == "1")
             {
                 Console.WriteLine("What would yo like to add");
-                var add = new Service(tasks);
                 string Task_to_add = Console.ReadLine();
-                if(add.AddTask(Task_to_add))
+                if (service.AddTask(Task_to_add))
                 {
                     Console.WriteLine($"You have added {Task_to_add}");
-                    continue;
                 }
-                Console.WriteLine("No space left to add a task");
-                continue;
+                else
+                {
+                    Console.WriteLine("No space left to add a task");
+                }
             }
             else
             {
                 Console.WriteLine("wrong input");
                 //code hadnling voor verkeerde input
-            }
+            }           
         }
     }
 }
