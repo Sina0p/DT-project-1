@@ -9,23 +9,12 @@ public class Service
             if (task != null && task.Id == id)
             {
                 task.Status = !task.Status;
+                Console.Clear();
                 DisplayTasks();
-                Console.WriteLine($"\n Status of {task.Name} toggled");
+
                 return;
             }
         }
-    }
-
-    public int FindTaskIndex(string taskToDelete)
-    {
-        for (int i = 0; i < todo.Length; i++)
-        {
-            if (todo[i] != null && todo[i].Name == taskToDelete)
-            {
-                return i;
-            }
-        }
-        return -1;
     }
     
     public bool AddTask(string name)
@@ -36,16 +25,24 @@ public class Service
             {
                 Task taskToAdd = new Task(i, name);
                 todo[i] = taskToAdd;
-                // Console.WriteLine($"Id: {todo[i].Id}, Name: {todo[i].Name}, Status: {todo[i].Status}");
                 return true;
             }
         }
         return false;
     }
 
-    public bool DeleteTask(string taskToDelete)
+    public bool DeleteTask(int id)
     {
-        int index = FindTaskIndex(taskToDelete);
+        int index = -1;
+
+        for (int i = 0; i < todo.Length; i++)
+        {
+            if (todo[i] != null && todo[i].Id == id)
+            {
+                index = i;
+                break;
+            }
+        }
 
         if (index == -1)
             return false;
@@ -59,6 +56,16 @@ public class Service
         return true;
     }
 
+    public bool TaskCheck()
+    {
+        for (int i = 0; i < todo.Length; i++)
+        {
+            if (todo[i] != null)
+                return true;
+        }
+        return false;
+    }
+
     public void DisplayTasks()
     {
         Console.WriteLine("All tasks:\n");
@@ -68,7 +75,7 @@ public class Service
             if (task != null)
             {
                 string status = task.Status ? "Done" : "Not Done";
-                Console.WriteLine($"{task.Id}. {task.Name} : ({status})");
+                Console.WriteLine($"({task.Id}) {task.Name} ({status})");
             }
         }
     }
