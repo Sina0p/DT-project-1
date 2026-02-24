@@ -1,6 +1,21 @@
+using System.Text.Json;
 public class Service
 {
     Task[] todo = new Task[99];
+
+    private List<Task> loadTask()
+    {
+        var json = File.ReadAllText("data.json");
+        List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(json)!;
+        return tasks;
+    }
+
+    private void saveTask(List<Task> tasks)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string updatedJson = JsonSerializer.Serialize(tasks, options);
+        File.WriteAllText("data.json", updatedJson);
+    }
 
     public void ToggleTask(int id)
     {
