@@ -1,6 +1,21 @@
+using System.Text.Json;
 public class Service
 {
     Task[] todo = new Task[99];
+
+    private List<Task> loadTask()
+    {
+        var json = File.ReadAllText("data.json");
+        List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(json)!;
+        return tasks;
+    }
+
+    private void saveTask(List<Task> tasks)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string updatedJson = JsonSerializer.Serialize(tasks, options);
+        File.WriteAllText("data.json", updatedJson);
+    }
 
     public void ToggleTask(int id)
     {
@@ -30,17 +45,16 @@ public class Service
     
     public bool AddTask(string name)
     {
-        for(int i = 0; i < todo.Length; ++i)
-        {
-            if(todo[i] == null)
-            {
-                Task taskToAdd = new Task(i, name);
-                todo[i] = taskToAdd;
-                // Console.WriteLine($"Id: {todo[i].Id}, Name: {todo[i].Name}, Status: {todo[i].Status}");
-                return true;
-            }
-        }
-        return false;
+        var tasks = loadTask();
+
+        int newId = tasks.Count > 0 ? tasks.Max(t => t.Id) + 1 : 0;
+
+        Task newTask = new Task(newId, name);
+        tasks.Add(newTask);
+
+        saveTask(tasks);
+
+        return true;
     }
 
     public bool DeleteTask(string taskToDelete)
