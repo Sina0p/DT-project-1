@@ -34,16 +34,17 @@ public class Service
     
     public bool AddTask(string name)
     {
-        for(int i = 0; i < todo.Length; ++i)
-        {
-            if(todo[i] == null)
-            {
-                Task taskToAdd = new Task(i, name);
-                todo[i] = taskToAdd;
-                return true;
-            }
-        }
-        return false;
+        var tasks = loadTask();
+
+        int idNum = tasks.Count >= 1 ? tasks.Max(task => task.Id)+ 1 : 0;
+
+        Task task = new Task(idNum, name);
+
+        tasks.Add(task);
+
+        saveTask(tasks);
+
+        return true;
     }
 
     public bool DeleteTask(int id)
