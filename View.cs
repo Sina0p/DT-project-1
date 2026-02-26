@@ -13,7 +13,8 @@ public class View
             Console.WriteLine("1. Add Task");
             Console.WriteLine("2. Remove Task");
             Console.WriteLine("3. Toggle Task State");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Filter Task");
+            Console.WriteLine("5. Exit");
 
             string Answer_check = Console.ReadLine()!;
             int Answer_for_to_do;
@@ -105,6 +106,27 @@ public class View
             
             //quit program
             else if (Answer_for_to_do == 4)
+            {
+                Console.Clear();
+                Console.WriteLine("Choose filter to filter on");
+                Console.WriteLine("\n( 1 ) Priority");
+                Console.WriteLine("( 2 ) Status");
+                Console.WriteLine("( 3 ) Creation date");
+
+                Console.Write("\nEnter filter ID: ");
+                string? input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int filterID))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                
+            }
+
+            else if (Answer_for_to_do == 5)
             {
                 Console.Clear();
                 Console.WriteLine("Quitting program...");
