@@ -53,26 +53,20 @@ public class Service
 
     public bool DeleteTask(int id)
     {
-        int index = -1;
+        var tasks = loadTask();
 
-        for (int i = 0; i < todo.Length; i++)
-        {
-            if (todo[i] != null && todo[i].Id == id)
-            {
-                index = i;
-                break;
-            }
-        }
-
-        if (index == -1)
+        var task = tasks.FirstOrDefault(t => t.Id == id);
+        if (task == null)
             return false;
 
-        for (int i = index; i < todo.Length - 1; i++)
+        tasks.Remove(task);
+
+        for (int i = 0; i < tasks.Count; i++)
         {
-            todo[i] = todo[i + 1];
+            tasks[i].Id = i;
         }
 
-        todo[todo.Length - 1] = null;
+        saveTask(tasks);
         return true;
     }
 

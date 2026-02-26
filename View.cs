@@ -54,12 +54,24 @@ public class View
                     Console.ReadLine();
                     continue;
                 }
-            
-                Console.WriteLine("Choose a task to delete");
 
+                Console.WriteLine("Choose a task to delete");
                 service.DisplayTasks();
 
-                service.DeleteTask(int.Parse(Console.ReadLine()!));        
+                Console.Write("\nEnter task ID: ");
+                string? input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int taskId))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                bool deleted = service.DeleteTask(taskId);
+                Console.WriteLine(deleted ? "Task deleted." : "Task ID not found.");
+
+                Console.ReadLine();
             }
     
             //toggle task status
