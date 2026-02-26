@@ -17,19 +17,23 @@ public class Service
         File.WriteAllText("data.json", updatedJson);
     }
 
-    public void ToggleTask(int id)
+    public bool ToggleTask(int id)
     {
-        foreach (Task task in todo)
-        {
-            if (task != null && task.Id == id)
-            {
-                task.Status = !task.Status;
-                Console.Clear();
-                DisplayTasks();
+        var tasks = loadTask();
 
-                return;
-            }
-        }
+        var task = tasks.FirstOrDefault(t => t.Id == id);
+
+        if (task == null)
+            return false;
+
+        task.Status = !task.Status;
+
+        saveTask(tasks);
+
+        Console.Clear();
+        DisplayTasks();
+
+        return true;
     }
     
     public bool AddTask(string name)
@@ -74,25 +78,26 @@ public class Service
 
     public bool TaskCheck()
     {
-        for (int i = 0; i < todo.Length; i++)
-        {
-            if (todo[i] != null)
-                return true;
-        }
-        return false;
+        var tasks = loadTask();
+        return tasks.Any();
     }
 
     public void DisplayTasks()
     {
+        var tasks = loadTask();
+
         Console.WriteLine("All tasks:\n");
 
-        foreach (Task task in todo)
+        if (!tasks.Any())
         {
-            if (task != null)
-            {
-                string status = task.Status ? "Done" : "Not Done";
-                Console.WriteLine($"({task.Id}) {task.Name} ({status})");
-            }
+            Console.WriteLine("No tasks found");
+            return;
+        }
+
+        foreach (var task in tasks)
+        {
+            string status = task.Status ? "Done" : "Not Done";
+            Console.WriteLine($"({task.Id}) {task.Name} ({status})");
         }
     }
 }

@@ -74,11 +74,21 @@ public class View
                     continue;
                 }
 
-                Console.WriteLine("Choose a task to toggle");
-
                 service.DisplayTasks();
 
-                service.ToggleTask(int.Parse(Console.ReadLine()!));
+                if (int.TryParse(Console.ReadLine(), out int id))
+                {
+                    if (!service.ToggleTask(id))
+                    {
+                        Console.WriteLine("Task not found");
+                        Console.ReadLine();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input");
+                    Console.ReadLine();
+                }
             }
             
             //quit program
