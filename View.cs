@@ -1,6 +1,41 @@
 public class View
-{   
-    private Service service = new Service();
+{
+    private Service service;
+
+    public View()
+    {
+        IMyCollection<Task> collection = ChooseCollection();
+        service = new Service(collection);
+    }
+
+    private IMyCollection<Task> ChooseCollection()
+    {
+        Console.WriteLine("Choose collection implementation:");
+        Console.WriteLine("1. ArrayCollection");
+        Console.WriteLine("2. LinkedListCollection");
+        Console.WriteLine("3. BinarySearchTreeCollection");
+
+        string? input = Console.ReadLine();
+
+        switch (input)
+        {
+            case "1":
+                return new ArrayCollection<Task>();
+
+            case "2":
+                //dit werkt nog niet
+                // return new LinkedListCollection<Task>();
+
+            case "3":
+                // dit werkt nog niet
+                // return new BinarySearchTreeCollection<Task>();
+
+            default:
+                Console.WriteLine("Invalid choice. Using ArrayCollection.");
+                return new ArrayCollection<Task>();
+        }
+    }
+
     public void to_do_list()
     {
         bool ongoing = true;
@@ -9,43 +44,39 @@ public class View
         {
             Console.Clear();
 
-            //menu
             Console.WriteLine("1. Add Task");
             Console.WriteLine("2. Remove Task");
             Console.WriteLine("3. Toggle Task State");
             Console.WriteLine("4. Filter Task");
             Console.WriteLine("5. Exit");
 
-            string Answer_check = Console.ReadLine()!;
-            int Answer_for_to_do;
+            string answerCheck = Console.ReadLine()!;
+            int answerForToDo;
 
-            //check voor keuzemenu anders quit (4)
-            if (!int.TryParse(Answer_check, out Answer_for_to_do) || Answer_for_to_do < 1 || Answer_for_to_do > 4)
+            if (!int.TryParse(answerCheck, out answerForToDo) || answerForToDo < 1 || answerForToDo > 5)
             {
-                Answer_for_to_do = 4;
+                answerForToDo = 5;
             }
 
-            //adding tasks
-            if (Answer_for_to_do == 1)
+            if (answerForToDo == 1)
             {
                 Console.Clear();
                 Console.WriteLine("Choose a task to add");
-            
-                string Task_to_add = Console.ReadLine()!;
-    
-                if (service.AddTask(Task_to_add))
+
+                string taskToAdd = Console.ReadLine()!;
+
+                if (service.AddTask(taskToAdd))
                 {
-                    Console.WriteLine($"You have added {Task_to_add}");
+                    Console.WriteLine($"You have added {taskToAdd}");
                 }
-            
                 else
                 {
                     Console.WriteLine("No space left to add a task");
                 }
+
+                Console.ReadLine();
             }
-        
-            //deleting tasks
-            else if (Answer_for_to_do == 2)
+            else if (answerForToDo == 2)
             {
                 Console.Clear();
 
@@ -74,9 +105,7 @@ public class View
 
                 Console.ReadLine();
             }
-    
-            //toggle task status
-            else if (Answer_for_to_do == 3)
+            else if (answerForToDo == 3)
             {
                 Console.Clear();
 
@@ -88,51 +117,34 @@ public class View
                 }
 
                 service.DisplayTasks();
+                Console.Write("\nEnter task ID: ");
 
                 if (int.TryParse(Console.ReadLine(), out int id))
                 {
                     if (!service.ToggleTask(id))
                     {
                         Console.WriteLine("Task not found");
-                        Console.ReadLine();
                     }
                 }
                 else
                 {
                     Console.WriteLine("Invalid input");
-                    Console.ReadLine();
                 }
+
+                Console.ReadLine();
             }
-            
-            //quit program
-            else if (Answer_for_to_do == 4)
+            else if (answerForToDo == 4)
             {
                 Console.Clear();
-                Console.WriteLine("Choose filter to filter on");
-                Console.WriteLine("\n( 1 ) Priority");
-                Console.WriteLine("( 2 ) Status");
-                Console.WriteLine("( 3 ) Creation date");
-
-                Console.Write("\nEnter filter ID: ");
-                string? input = Console.ReadLine();
-
-                if (!int.TryParse(input, out int filterID))
-                {
-                    Console.WriteLine("Invalid input. Please enter a number.");
-                    Console.ReadLine();
-                    continue;
-                }
-
-                
+                Console.WriteLine("Filter not implemented yet.");
+                Console.ReadLine();
             }
-
-            else if (Answer_for_to_do == 5)
+            else if (answerForToDo == 5)
             {
                 Console.Clear();
                 Console.WriteLine("Quitting program...");
-
                 ongoing = false;
-            }         
+            }
         }
     }
 }

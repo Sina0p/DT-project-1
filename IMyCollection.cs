@@ -1,4 +1,4 @@
-interface IMyCollection<T> {
+public interface IMyCollection<T> {
     void Add(T item);
     void Remove(T item);
     T FindBy<K>(K key, Func<T, K, bool> comparer);
@@ -13,7 +13,7 @@ interface IMyCollection<T> {
     IEnumerator<T> GetEnumerator(); // Extra foreach lookup.
 }
 
-interface IMyIterator<T> {
+public interface IMyIterator<T> {
     bool HasNext();  // Checks if there is another element
     T Next();        // Returns the next element
     void Reset();    // Resets the iterator to the beginning
