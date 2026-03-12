@@ -1,25 +1,19 @@
 using System.Text.Json;
+using Microsoft.VisualBasic;
+
 public class Service
 {
-    Task[] todo = new Task[99];
+    private IMyCollection<Task> _collection;
+    private Repository repository = new Repository();
 
-    private List<Task> loadTask()
+    public Service(IMyCollection<Task> collection)
     {
-        var json = File.ReadAllText("data.json");
-        List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(json)!;
-        return tasks;
-    }
-
-    private void saveTask(List<Task> tasks)
-    {
-        var options = new JsonSerializerOptions { WriteIndented = true };
-        string updatedJson = JsonSerializer.Serialize(tasks, options);
-        File.WriteAllText("data.json", updatedJson);
+        _collection = collection;
     }
 
     public bool ToggleTask(int id)
     {
-        var tasks = loadTask();
+        var tasks = repository.loadTask();
 
         var task = tasks.FirstOrDefault(t => t.Id == id);
 
@@ -28,32 +22,32 @@ public class Service
 
         task.Status = !task.Status;
 
-        saveTask(tasks);
+        repository.saveTask(tasks);
 
         Console.Clear();
         DisplayTasks();
 
         return true;
     }
-    
+
     public bool AddTask(string name)
     {
-        var tasks = loadTask();
+        var tasks = repository.loadTask();
 
-        int idNum = tasks.Count >= 1 ? tasks.Max(task => task.Id)+ 1 : 0;
+        int idNum = tasks.Count >= 1 ? tasks.Max(task => task.Id) + 1 : 0;
 
         Task task = new Task(idNum, name);
 
         tasks.Add(task);
 
-        saveTask(tasks);
+        repository.saveTask(tasks);
 
         return true;
     }
 
     public bool DeleteTask(int id)
     {
-        var tasks = loadTask();
+        var tasks = repository.loadTask();
 
         var task = tasks.FirstOrDefault(t => t.Id == id);
         if (task == null)
@@ -66,19 +60,19 @@ public class Service
             tasks[i].Id = i;
         }
 
-        saveTask(tasks);
+        repository.saveTask(tasks);
         return true;
     }
 
     public bool TaskCheck()
     {
-        var tasks = loadTask();
+        var tasks = repository.loadTask();
         return tasks.Any();
     }
 
     public void DisplayTasks()
     {
-        var tasks = loadTask();
+        var tasks = repository.loadTask();
 
         Console.WriteLine("All tasks:\n");
 
