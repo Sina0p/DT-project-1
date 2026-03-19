@@ -14,3 +14,15 @@ public class Task
         Priority = 1;
     } 
 }
+
+public class LinkedListNode<T>
+{
+    public T Waarde { get; set; }
+    public LinkedListNode<T>? Volgende { get; set; }
+
+    public LinkedListNode(T waarde)
+    {
+        Waarde = waarde;
+        Volgende = null;
+    }
+}
