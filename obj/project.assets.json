@@ -8,7 +8,7 @@
     "net10.0": []
   },
   "packageFolders": {
-    "C:\\Users\\lakey\\.nuget\\packages\\": {}
+    "C:\\Users\\sinah\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -16,11 +16,11 @@
       "projectUniqueName": "C:\\DT1\\DT-project-1\\DT-project-1.csproj",
       "projectName": "DT-project-1",
       "projectPath": "C:\\DT1\\DT-project-1\\DT-project-1.csproj",
-      "packagesPath": "C:\\Users\\lakey\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\sinah\\.nuget\\packages\\",
       "outputPath": "C:\\DT1\\DT-project-1\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\lakey\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\sinah\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
