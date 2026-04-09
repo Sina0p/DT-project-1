@@ -1,88 +1,86 @@
-using System.Text.Json;
-using Microsoft.VisualBasic;
+using System;
 
 public class Service
 {
-    private IMyCollection<Task> _collection;
+    private IMyCollection<TaskItem> _collection;
     private Repository repository = new Repository();
 
-    public Service(IMyCollection<Task> collection)
+    public Service(IMyCollection<TaskItem> collection)
     {
         _collection = collection;
     }
 
     public bool ToggleTask(int id)
     {
-        var tasks = repository.loadTask();
-
-        var task = tasks.FirstOrDefault(t => t.Id == id);
+        var task = _collection.FindBy(id, (t, key) => t.Id == key);
 
         if (task == null)
             return false;
 
         task.Status = !task.Status;
 
-        repository.saveTask(tasks);
-
-        Console.Clear();
-        DisplayTasks();
+        repository.saveTask(_collection);
 
         return true;
     }
 
     public bool AddTask(string name)
     {
-        var tasks = repository.loadTask();
+        int maxId = -1;
 
-        int idNum = tasks.Count >= 1 ? tasks.Max(task => task.Id) + 1 : 0;
+        foreach (var task in _collection)
+        {
+            if (task.Id > maxId)
+                maxId = task.Id;
+        }
 
-        Task task = new Task(idNum, name);
+        int newId = maxId + 1;
 
-        tasks.Add(task);
+        TaskItem newTask = new TaskItem(newId, name);
 
-        repository.saveTask(tasks);
+        _collection.Add(newTask);
+
+        repository.saveTask(_collection);
 
         return true;
     }
 
     public bool DeleteTask(int id)
     {
-        var tasks = repository.loadTask();
+        var task = _collection.FindBy(id, (t, key) => t.Id == key);
 
-        var task = tasks.FirstOrDefault(t => t.Id == id);
         if (task == null)
             return false;
 
-        tasks.Remove(task);
+        _collection.Remove(task);
 
-        for (int i = 0; i < tasks.Count; i++)
+        int index = 0;
+        foreach (var t in _collection)
         {
-            tasks[i].Id = i;
+            t.Id = index++;
         }
 
-        repository.saveTask(tasks);
+        repository.saveTask(_collection);
+
         return true;
     }
 
     public bool TaskCheck()
     {
-        var tasks = repository.loadTask();
-        return tasks.Any();
+        return _collection.Count > 0;
     }
 
     public void DisplayTasks()
     {
-        var tasks = repository.loadTask();
-
         Console.WriteLine("All tasks:\n");
 
-        if (!tasks.Any())
+        if (_collection.Count == 0)
         {
             Console.WriteLine("No tasks found");
             return;
         }
 
-        foreach (var task in tasks)
+        foreach (var task in _collection)
         {
             string status = task.Status ? "Done" : "Not Done";
             Console.WriteLine($"({task.Id}) {task.Name} ({status})");

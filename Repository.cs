@@ -1,24 +1,41 @@
 using System.Text.Json;
+
 public class Repository
 {
-    public List<Task> loadTask()
+    public IMyCollection<TaskItem> loadTask()
     {
+        if (!File.Exists("data.json"))
+            return new ArrayCollection<TaskItem>();
+
         var json = File.ReadAllText("data.json");
 
-        if (string.IsNullOrWhiteSpace(json))
+        TaskItem[]? tasksArray = JsonSerializer.Deserialize<TaskItem[]>(json);
+
+        var collection = new ArrayCollection<TaskItem>();
+
+        if (tasksArray != null)
         {
-            return new List<Task>();
+            foreach (var task in tasksArray)
+            {
+                collection.Add(task);
+            }
         }
-
-        List<Task>? tasks = JsonSerializer.Deserialize<List<Task>>(json);
-
-        return tasks ?? new List<Task>();
+        return collection;
     }
 
-    public void saveTask(List<Task> tasks)
+    public void saveTask(IMyCollection<TaskItem> tasks)
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
-        string updatedJson = JsonSerializer.Serialize(tasks, options);
-        File.WriteAllText("data.json", updatedJson);
+
+        TaskItem[] array = new TaskItem[tasks.Count];
+
+        int index = 0;
+        foreach (var task in tasks)
+        {
+            array[index++] = task;
+        }
+
+        string json = JsonSerializer.Serialize(array, options);
+        File.WriteAllText("data.json", json);
     }
 }
