@@ -4,11 +4,11 @@ public class View
 
     public View()
     {
-        IMyCollection<Task> collection = ChooseCollection();
+        IMyCollection<TaskItem> collection = ChooseCollection();
         service = new Service(collection);
     }
 
-    private IMyCollection<Task> ChooseCollection()
+    private IMyCollection<TaskItem> ChooseCollection()
     {
         Console.WriteLine("Choose collection implementation:");
         Console.WriteLine("1. ArrayCollection");
@@ -20,19 +20,17 @@ public class View
         switch (input)
         {
             case "1":
-                return new ArrayCollection<Task>();
+                return new ArrayCollection<TaskItem>();
 
             case "2":
-                //dit werkt nog niet
-                // return new LinkedListCollection<Task>();
+                // return new ArrayCollection<TaskItem>();
 
             case "3":
-                // dit werkt nog niet
-                // return new BinarySearchTreeCollection<Task>();
+                // return new ArrayCollection<TaskItem>();
 
             default:
                 Console.WriteLine("Invalid choice. Using ArrayCollection.");
-                return new ArrayCollection<Task>();
+                return new ArrayCollection<TaskItem>();
         }
     }
 
