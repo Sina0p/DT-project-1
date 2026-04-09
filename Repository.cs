@@ -1,8 +1,8 @@
 using System.Text.Json;
 
-public class Repository
+public class Repository : ITaskRepository
 {
-    public IMyCollection<TaskItem> loadTask()
+    public IMyCollection<TaskItem> LoadTasks()
     {
         if (!File.Exists("data.json"))
             return new ArrayCollection<TaskItem>();
@@ -23,7 +23,7 @@ public class Repository
         return collection;
     }
 
-    public void saveTask(IMyCollection<TaskItem> tasks)
+    public void SaveTasks(IMyCollection<TaskItem> tasks)
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
 
