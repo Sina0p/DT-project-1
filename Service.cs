@@ -1,13 +1,12 @@
-using System;
-
-public class Service
+public class Service : ITaskService
 {
-    private IMyCollection<TaskItem> _collection;
-    private Repository repository = new Repository();
+    private readonly IMyCollection<TaskItem> _collection;
+    private readonly ITaskRepository _repository;
 
-    public Service(IMyCollection<TaskItem> collection)
+    public Service(IMyCollection<TaskItem> collection, ITaskRepository repository)
     {
         _collection = collection;
+        _repository = repository;
     }
 
     public bool ToggleTask(int id)
@@ -18,9 +17,7 @@ public class Service
             return false;
 
         task.Status = !task.Status;
-
-        repository.saveTask(_collection);
-
+        _repository.SaveTasks(_collection);
         return true;
     }
 
@@ -35,13 +32,10 @@ public class Service
         }
 
         int newId = maxId + 1;
-
         TaskItem newTask = new TaskItem(newId, name);
-
         _collection.Add(newTask);
 
-        repository.saveTask(_collection);
-
+        _repository.SaveTasks(_collection);
         return true;
     }
 
@@ -60,8 +54,7 @@ public class Service
             t.Id = index++;
         }
 
-        repository.saveTask(_collection);
-
+        _repository.SaveTasks(_collection);
         return true;
     }
 

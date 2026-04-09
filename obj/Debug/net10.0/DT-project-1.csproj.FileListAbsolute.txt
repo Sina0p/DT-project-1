@@ -28,3 +28,18 @@ C:\DT_project\DT-project-1\bin\Debug\net10.0\DT-project-1.dll
 C:\DT_project\DT-project-1\bin\Debug\net10.0\DT-project-1.pdb
 C:\DT_project\DT-project-1\obj\Debug\net10.0\DT-project-1.genruntimeconfig.cache
 C:\DT_project\DT-project-1\obj\Debug\net10.0\ref\DT-project-1.dll
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.AssemblyInfoInputs.cache
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.AssemblyInfo.cs
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.csproj.CoreCompileInputs.cache
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.sourcelink.json
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.dll
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\refint\DT-project-1.dll
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.pdb
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\bin\Debug\net10.0\DT-project-1.exe
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\bin\Debug\net10.0\DT-project-1.deps.json
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\bin\Debug\net10.0\DT-project-1.runtimeconfig.json
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\bin\Debug\net10.0\DT-project-1.dll
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\bin\Debug\net10.0\DT-project-1.pdb
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\DT-project-1.genruntimeconfig.cache
+C:\Users\lakey\Desktop\School\Data project 1\DT-project-1\obj\Debug\net10.0\ref\DT-project-1.dll
