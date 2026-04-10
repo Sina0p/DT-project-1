@@ -7,6 +7,17 @@ public class Service : ITaskService
     {
         _collection = collection;
         _repository = repository;
+
+        var loadedTasks = _repository.LoadTasks();
+        foreach (var task in loadedTasks)
+        {
+            _collection.Add(task);
+        }
+    }
+
+    private void Save()
+    {
+        _repository.SaveTasks(_collection);
     }
 
     public bool ToggleTask(int id)
@@ -17,25 +28,20 @@ public class Service : ITaskService
             return false;
 
         task.Status = !task.Status;
-        _repository.SaveTasks(_collection);
+        Save();
         return true;
     }
 
     public bool AddTask(string name)
     {
-        int maxId = -1;
+        Console.WriteLine(_collection.GetType().Name);
+        int maxId = _collection.Count > 0 ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max) : -1;
 
-        foreach (var task in _collection)
-        {
-            if (task.Id > maxId)
-                maxId = task.Id;
-        }
+        TaskItem newTask = new TaskItem(maxId + 1, name);
 
-        int newId = maxId + 1;
-        TaskItem newTask = new TaskItem(newId, name);
         _collection.Add(newTask);
 
-        _repository.SaveTasks(_collection);
+        Save();
         return true;
     }
 
@@ -54,7 +60,7 @@ public class Service : ITaskService
             t.Id = index++;
         }
 
-        _repository.SaveTasks(_collection);
+        Save();
         return true;
     }
 

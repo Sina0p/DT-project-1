@@ -23,12 +23,6 @@ else
 
 ITaskRepository repository = new Repository();
 
-var loadedTasks = repository.LoadTasks();
-foreach (var task in loadedTasks)
-{
-    collection.Add(task);
-}
-
 ITaskService service = new Service(collection, repository);
 View view = new View(service);
 
