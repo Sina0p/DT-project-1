@@ -27,13 +27,16 @@ public class Repository : ITaskRepository
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
 
-        TaskItem[] array = new TaskItem[tasks.Count];
+        List<TaskItem> list = new List<TaskItem>();
 
-        int index = 0;
         foreach (var task in tasks)
         {
-            array[index++] = task;
+            list.Add(task);
         }
+
+        list.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+        TaskItem[] array = list.ToArray();
 
         string json = JsonSerializer.Serialize(array, options);
         File.WriteAllText("data.json", json);

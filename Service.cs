@@ -54,10 +54,17 @@ public class Service : ITaskService
 
         _collection.Remove(task);
 
-        int index = 0;
+        List<TaskItem> list = new List<TaskItem>();
         foreach (var t in _collection)
         {
-            t.Id = index++;
+            list.Add(t);
+        }
+
+        list.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].Id = i;
         }
 
         Save();
@@ -72,6 +79,7 @@ public class Service : ITaskService
     public void DisplayTasks()
     {
         Console.WriteLine("All tasks:\n");
+        // Console.WriteLine(_collection.GetType().Name); // for debugging
 
         if (_collection.Count == 0)
         {
