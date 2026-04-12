@@ -4,8 +4,9 @@ using System.Collections;
 public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
 {
     private BSTNode<T>? _root;
-    private readonly Func<T, T, int> _compare;
+    private readonly Func<T, T, int> _treeCompare;
     private int _count;
+    private ArrayCollection<T>? _sortedView;
 
     public int Count => _count;
     public bool Dirty { get; set; }
@@ -13,9 +14,10 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
     public BSTCollection(Func<T, T, int> compare)
     {
         _root = null;
-        _compare = compare;
+        _treeCompare = compare;
         _count = 0;
         Dirty = false;
+        _sortedView = null;
     }
 
     public void Add(T item)
@@ -23,6 +25,7 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         _root = AddRecursive(_root, item);
         _count++;
         Dirty = true;
+        _sortedView = null;
     }
 
     private BSTNode<T> AddRecursive(BSTNode<T>? node, T item)
@@ -30,16 +33,12 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         if (node == null)
             return new BSTNode<T>(item);
 
-        int result = _compare(item, node.Value);
+        int result = _treeCompare(item, node.Value);
 
         if (result < 0)
-        {
             node.Left = AddRecursive(node.Left, item);
-        }
         else
-        {
             node.Right = AddRecursive(node.Right, item);
-        }
 
         return node;
     }
@@ -53,6 +52,7 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         {
             _count--;
             Dirty = true;
+            _sortedView = null;
         }
     }
 
@@ -63,7 +63,7 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         if (node == null)
             return null;
 
-        int result = _compare(item, node.Value);
+        int result = _treeCompare(item, node.Value);
 
         if (result < 0)
         {
@@ -91,8 +91,8 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         BSTNode<T> successor = GetMinNode(node.Right);
         node.Value = successor.Value;
 
-        bool dummy;
-        node.Right = RemoveRecursive(node.Right, successor.Value, out dummy);
+        bool ignored;
+        node.Right = RemoveRecursive(node.Right, successor.Value, out ignored);
         return node;
     }
 
@@ -122,7 +122,7 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
             return node.Value;
 
         T leftResult = FindByRecursive(node.Left, key, comparer);
-        if (leftResult != null && !leftResult.Equals(default(T)))
+        if (!Equals(leftResult, default(T)))
             return leftResult;
 
         return FindByRecursive(node.Right, key, comparer);
@@ -130,7 +130,7 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public IMyCollection<T> Filter(Func<T, bool> predicate)
     {
-        var result = new BSTCollection<T>(_compare);
+        BSTCollection<T> result = new BSTCollection<T>(_treeCompare);
         FilterRecursive(_root, predicate, result);
         return result;
     }
@@ -143,53 +143,28 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
         FilterRecursive(node.Left, predicate, result);
 
         if (predicate(node.Value))
-        {
             result.Add(node.Value);
-        }
 
         FilterRecursive(node.Right, predicate, result);
     }
 
     public void Sort(Comparison<T> comparison)
     {
-        T[] items = new T[_count];
-        int index = 0;
-
-        FillArrayInOrder(_root, items, ref index);
-
-        for (int i = 1; i < items.Length; i++)
-        {
-            T current = items[i];
-            int j = i - 1;
-
-            while (j >= 0 && comparison(items[j], current) > 0)
-            {
-                items[j + 1] = items[j];
-                j--;
-            }
-
-            items[j + 1] = current;
-        }
-
-        _root = null;
-        _count = 0;
-
-        for (int i = 0; i < items.Length; i++)
-        {
-            Add(items[i]);
-        }
-
+        ArrayCollection<T> items = new ArrayCollection<T>(_count > 0 ? _count : 4);
+        FillCollectionInOrder(_root, items);
+        items.Sort(comparison);
+        _sortedView = items;
         Dirty = true;
     }
 
-    private void FillArrayInOrder(BSTNode<T>? node, T[] items, ref int index)
+    private void FillCollectionInOrder(BSTNode<T>? node, ArrayCollection<T> items)
     {
         if (node == null)
             return;
 
-        FillArrayInOrder(node.Left, items, ref index);
-        items[index++] = node.Value;
-        FillArrayInOrder(node.Right, items, ref index);
+        FillCollectionInOrder(node.Left, items);
+        items.Add(node.Value);
+        FillCollectionInOrder(node.Right, items);
     }
 
     public R Reduce<R>(Func<R, T, R> accumulator)
@@ -218,12 +193,18 @@ public class BSTCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public IMyIterator<T> GetIterator()
     {
-        return new BSTIterator<T>(_root, _compare);
+        if (_sortedView != null)
+            return _sortedView.GetIterator();
+
+        return new BSTIterator<T>(_root, _treeCompare);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return new BSTEnumerator<T>(_root, _compare);
+        if (_sortedView != null)
+            return _sortedView.GetEnumerator();
+
+        return new BSTEnumerator<T>(_root, _treeCompare);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

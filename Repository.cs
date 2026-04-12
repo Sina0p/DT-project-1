@@ -2,43 +2,57 @@ using System.Text.Json;
 
 public class Repository : ITaskRepository
 {
+    private const string FilePath = "data.json";
+
     public IMyCollection<TaskItem> LoadTasks()
     {
-        if (!File.Exists("data.json"))
-            return new ArrayCollection<TaskItem>();
+        ArrayCollection<TaskItem> collection = new ArrayCollection<TaskItem>();
 
-        var json = File.ReadAllText("data.json");
+        if (!File.Exists(FilePath))
+            return collection;
 
+        string json = File.ReadAllText(FilePath);
         TaskItem[]? tasksArray = JsonSerializer.Deserialize<TaskItem[]>(json);
 
-        var collection = new ArrayCollection<TaskItem>();
+        if (tasksArray == null)
+            return collection;
 
-        if (tasksArray != null)
+        for (int i = 0; i < tasksArray.Length; i++)
         {
-            foreach (var task in tasksArray)
-            {
-                collection.Add(task);
-            }
+            collection.Add(tasksArray[i]);
         }
+
+        collection.Dirty = false;
         return collection;
     }
 
     public void SaveTasks(IMyCollection<TaskItem> tasks)
     {
-        var options = new JsonSerializerOptions { WriteIndented = true };
+        ArrayCollection<TaskItem> ordered = new ArrayCollection<TaskItem>();
 
-        List<TaskItem> list = new List<TaskItem>();
-
-        foreach (var task in tasks)
+        foreach (TaskItem task in tasks)
         {
-            list.Add(task);
+            ordered.Add(task);
         }
 
-        list.Sort((a, b) => a.Id.CompareTo(b.Id));
+        ordered.Sort((a, b) => a.Id.CompareTo(b.Id));
 
-        TaskItem[] array = list.ToArray();
+        TaskItem[] array = new TaskItem[ordered.Count];
+        int index = 0;
+
+        foreach (TaskItem task in ordered)
+        {
+            array[index++] = task;
+        }
+
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
 
         string json = JsonSerializer.Serialize(array, options);
-        File.WriteAllText("data.json", json);
+        File.WriteAllText(FilePath, json);
+
+        tasks.Dirty = false;
     }
 }

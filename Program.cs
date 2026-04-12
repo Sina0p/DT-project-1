@@ -5,7 +5,7 @@ Console.WriteLine("3. Binary Search Tree");
 Console.WriteLine("4. Hash Map");
 Console.Write("Enter choice: ");
 
-string choice = Console.ReadLine();
+string? choice = Console.ReadLine();
 
 IMyCollection<TaskItem> collection;
 
@@ -27,7 +27,6 @@ else
 }
 
 ITaskRepository repository = new Repository();
-
 ITaskService service = new Service(collection, repository);
 View view = new View(service);
 

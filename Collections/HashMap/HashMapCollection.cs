@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 
 public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 {
     private ArrayCollection<T>[] _buckets;
     private readonly Func<T, int> _hashFunc;
     private int _count;
+    private ArrayCollection<T>? _sortedView;
 
     public int Count => _count;
     public bool Dirty { get; set; }
@@ -26,6 +26,7 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
         _count = 0;
         Dirty = false;
+        _sortedView = null;
     }
 
     private int GetIndex(T item)
@@ -45,6 +46,7 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
         _buckets[index].Add(item);
         _count++;
         Dirty = true;
+        _sortedView = null;
     }
 
     public void Remove(T item)
@@ -58,6 +60,7 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
         {
             _count--;
             Dirty = true;
+            _sortedView = null;
         }
     }
 
@@ -92,46 +95,18 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public void Sort(Comparison<T> comparison)
     {
-        if (_count <= 1)
-            return;
-
-        T[] items = new T[_count];
-        int index = 0;
+        ArrayCollection<T> ordered = new ArrayCollection<T>(_count > 0 ? _count : 4);
 
         for (int i = 0; i < _buckets.Length; i++)
         {
             foreach (T item in _buckets[i])
             {
-                items[index++] = item;
+                ordered.Add(item);
             }
         }
 
-        for (int i = 1; i < items.Length; i++)
-        {
-            T current = items[i];
-            int j = i - 1;
-
-            while (j >= 0 && comparison(items[j], current) > 0)
-            {
-                items[j + 1] = items[j];
-                j--;
-            }
-
-            items[j + 1] = current;
-        }
-
-        for (int i = 0; i < _buckets.Length; i++)
-        {
-            _buckets[i] = new ArrayCollection<T>();
-        }
-
-        _count = 0;
-
-        for (int i = 0; i < items.Length; i++)
-        {
-            Add(items[i]);
-        }
-
+        ordered.Sort(comparison);
+        _sortedView = ordered;
         Dirty = true;
     }
 
@@ -167,11 +142,17 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public IMyIterator<T> GetIterator()
     {
+        if (_sortedView != null)
+            return _sortedView.GetIterator();
+
         return new HashMapIterator<T>(_buckets);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
+        if (_sortedView != null)
+            return _sortedView.GetEnumerator();
+
         return new HashMapEnumerator<T>(_buckets);
     }
 

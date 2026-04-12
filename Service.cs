@@ -8,46 +8,51 @@ public class Service : ITaskService
         _collection = collection;
         _repository = repository;
 
-        var loadedTasks = _repository.LoadTasks();
-        foreach (var task in loadedTasks)
+        IMyCollection<TaskItem> loadedTasks = _repository.LoadTasks();
+        foreach (TaskItem task in loadedTasks)
         {
             _collection.Add(task);
         }
+
+        _collection.Dirty = false;
     }
 
     private void Save()
     {
-        _repository.SaveTasks(_collection);
+        if (_collection.Dirty)
+        {
+            _repository.SaveTasks(_collection);
+        }
     }
 
     public bool ToggleTask(int id)
     {
-        var task = _collection.FindBy(id, (t, key) => t.Id == key);
+        TaskItem task = _collection.FindBy(id, (t, key) => t.Id == key);
 
         if (task == null)
             return false;
 
         task.Status = !task.Status;
+        _collection.Dirty = true;
         Save();
         return true;
     }
 
     public bool AddTask(string name)
     {
-        Console.WriteLine(_collection.GetType().Name);
-        int maxId = _collection.Count > 0 ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max) : -1;
+        int maxId = _collection.Count > 0
+            ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max)
+            : -1;
 
         TaskItem newTask = new TaskItem(maxId + 1, name);
-
         _collection.Add(newTask);
-
         Save();
         return true;
     }
 
     public bool DeleteTask(int id)
     {
-        var task = _collection.FindBy(id, (t, key) => t.Id == key);
+        TaskItem task = _collection.FindBy(id, (t, key) => t.Id == key);
 
         if (task == null)
             return false;
@@ -65,7 +70,6 @@ public class Service : ITaskService
     public void DisplayTasks()
     {
         Console.WriteLine("All tasks:\n");
-        Console.WriteLine(_collection.GetType().Name); // for debugging
 
         if (_collection.Count == 0)
         {
@@ -73,7 +77,10 @@ public class Service : ITaskService
             return;
         }
 
-        foreach (var task in _collection)
+        IMyCollection<TaskItem> ordered = _collection.Filter(t => true);
+        ordered.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+        foreach (TaskItem task in ordered)
         {
             string status = task.Status ? "Done" : "Not Done";
             Console.WriteLine($"({task.Id}) {task.Name} ({status})");
