@@ -4,25 +4,27 @@ using System.Collections.Generic;
 
 public class HashMapEnumerator<T> : IEnumerator<T>
 {
-    private readonly List<T>[] _buckets;
+    private readonly ArrayCollection<T>[] _buckets;
     private int _bucketIndex;
-    private int _itemIndex;
+    private IEnumerator<T>? _currentEnumerator;
+    private T _current;
 
-    public HashMapEnumerator(List<T>[] buckets)
+    public HashMapEnumerator(ArrayCollection<T>[] buckets)
     {
         _buckets = buckets;
         _bucketIndex = 0;
-        _itemIndex = -1;
+        _currentEnumerator = null;
+        _current = default!;
     }
 
     public T Current
     {
         get
         {
-            if (_bucketIndex >= _buckets.Length || _itemIndex < 0)
+            if (_currentEnumerator == null)
                 throw new InvalidOperationException();
 
-            return _buckets[_bucketIndex][_itemIndex];
+            return _current;
         }
     }
 
@@ -32,13 +34,18 @@ public class HashMapEnumerator<T> : IEnumerator<T>
     {
         while (_bucketIndex < _buckets.Length)
         {
-            _itemIndex++;
+            if (_currentEnumerator == null)
+                _currentEnumerator = _buckets[_bucketIndex].GetEnumerator();
 
-            if (_itemIndex < _buckets[_bucketIndex].Count)
+            if (_currentEnumerator.MoveNext())
+            {
+                _current = _currentEnumerator.Current;
                 return true;
+            }
 
+            _currentEnumerator.Dispose();
+            _currentEnumerator = null;
             _bucketIndex++;
-            _itemIndex = -1;
         }
 
         return false;
@@ -46,9 +53,17 @@ public class HashMapEnumerator<T> : IEnumerator<T>
 
     public void Reset()
     {
+        if (_currentEnumerator != null)
+            _currentEnumerator.Dispose();
+
         _bucketIndex = 0;
-        _itemIndex = -1;
+        _currentEnumerator = null;
+        _current = default!;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        if (_currentEnumerator != null)
+            _currentEnumerator.Dispose();
+    }
 }
