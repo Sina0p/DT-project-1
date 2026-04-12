@@ -19,7 +19,7 @@ else if (choice == "3")
 }
 else if (choice == "4")
 {
-    collection = new HashMapCollection<TaskItem>(task => task.GetHashCode());
+    collection = new HashMapCollection<TaskItem>(task => task.Id);
 }
 else
 {

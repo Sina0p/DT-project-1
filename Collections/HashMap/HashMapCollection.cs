@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 {
-    private List<T>[] _buckets;
+    private ArrayCollection<T>[] _buckets;
     private readonly Func<T, int> _hashFunc;
     private int _count;
 
@@ -13,12 +13,15 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public HashMapCollection(Func<T, int> hashFunc, int capacity = 16)
     {
+        if (capacity < 1)
+            capacity = 16;
+
         _hashFunc = hashFunc;
-        _buckets = new List<T>[capacity];
+        _buckets = new ArrayCollection<T>[capacity];
 
         for (int i = 0; i < capacity; i++)
         {
-            _buckets[i] = new List<T>();
+            _buckets[i] = new ArrayCollection<T>();
         }
 
         _count = 0;
@@ -28,7 +31,12 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
     private int GetIndex(T item)
     {
         int hash = _hashFunc(item);
-        return Math.Abs(hash) % _buckets.Length;
+
+        if (hash == int.MinValue)
+            hash = 0;
+
+        hash = Math.Abs(hash);
+        return hash % _buckets.Length;
     }
 
     public void Add(T item)
@@ -42,8 +50,11 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
     public void Remove(T item)
     {
         int index = GetIndex(item);
+        int before = _buckets[index].Count;
 
-        if (_buckets[index].Remove(item))
+        _buckets[index].Remove(item);
+
+        if (_buckets[index].Count < before)
         {
             _count--;
             Dirty = true;
@@ -52,13 +63,12 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public T FindBy<K>(K key, Func<T, K, bool> comparer)
     {
-        foreach (var bucket in _buckets)
+        for (int i = 0; i < _buckets.Length; i++)
         {
-            foreach (var item in bucket)
-            {
-                if (comparer(item, key))
-                    return item;
-            }
+            T found = _buckets[i].FindBy(key, comparer);
+
+            if (!Equals(found, default(T)))
+                return found;
         }
 
         return default!;
@@ -66,11 +76,11 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public IMyCollection<T> Filter(Func<T, bool> predicate)
     {
-        var result = new HashMapCollection<T>(_hashFunc);
+        HashMapCollection<T> result = new HashMapCollection<T>(_hashFunc, _buckets.Length);
 
-        foreach (var bucket in _buckets)
+        for (int i = 0; i < _buckets.Length; i++)
         {
-            foreach (var item in bucket)
+            foreach (T item in _buckets[i])
             {
                 if (predicate(item))
                     result.Add(item);
@@ -82,25 +92,44 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
 
     public void Sort(Comparison<T> comparison)
     {
-        List<T> allItems = new List<T>();
+        if (_count <= 1)
+            return;
 
-        foreach (var bucket in _buckets)
-        {
-            allItems.AddRange(bucket);
-        }
-
-        allItems.Sort(comparison);
+        T[] items = new T[_count];
+        int index = 0;
 
         for (int i = 0; i < _buckets.Length; i++)
         {
-            _buckets[i].Clear();
+            foreach (T item in _buckets[i])
+            {
+                items[index++] = item;
+            }
+        }
+
+        for (int i = 1; i < items.Length; i++)
+        {
+            T current = items[i];
+            int j = i - 1;
+
+            while (j >= 0 && comparison(items[j], current) > 0)
+            {
+                items[j + 1] = items[j];
+                j--;
+            }
+
+            items[j + 1] = current;
+        }
+
+        for (int i = 0; i < _buckets.Length; i++)
+        {
+            _buckets[i] = new ArrayCollection<T>();
         }
 
         _count = 0;
 
-        foreach (var item in allItems)
+        for (int i = 0; i < items.Length; i++)
         {
-            Add(item);
+            Add(items[i]);
         }
 
         Dirty = true;
@@ -110,9 +139,9 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
     {
         R result = default!;
 
-        foreach (var bucket in _buckets)
+        for (int i = 0; i < _buckets.Length; i++)
         {
-            foreach (var item in bucket)
+            foreach (T item in _buckets[i])
             {
                 result = accumulator(result, item);
             }
@@ -125,9 +154,9 @@ public class HashMapCollection<T> : IMyCollection<T>, IEnumerable<T>
     {
         R result = initial;
 
-        foreach (var bucket in _buckets)
+        for (int i = 0; i < _buckets.Length; i++)
         {
-            foreach (var item in bucket)
+            foreach (T item in _buckets[i])
             {
                 result = accumulator(result, item);
             }

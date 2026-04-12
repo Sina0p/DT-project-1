@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 
 public class HashMapIterator<T> : IMyIterator<T>
 {
-    private readonly List<T>[] _buckets;
+    private readonly ArrayCollection<T>[] _buckets;
     private int _bucketIndex;
-    private int _itemIndex;
+    private IMyIterator<T>? _currentIterator;
 
-    public HashMapIterator(List<T>[] buckets)
+    public HashMapIterator(ArrayCollection<T>[] buckets)
     {
         _buckets = buckets;
         Reset();
@@ -15,18 +14,18 @@ public class HashMapIterator<T> : IMyIterator<T>
 
     public bool HasNext()
     {
-        int b = _bucketIndex;
-        int i = _itemIndex;
+        if (_currentIterator != null && _currentIterator.HasNext())
+            return true;
 
-        while (b < _buckets.Length)
+        int tempBucketIndex = _bucketIndex;
+
+        while (tempBucketIndex < _buckets.Length)
         {
-            i++;
-
-            if (i < _buckets[b].Count)
+            IMyIterator<T> iterator = _buckets[tempBucketIndex].GetIterator();
+            if (iterator.HasNext())
                 return true;
 
-            b++;
-            i = -1;
+            tempBucketIndex++;
         }
 
         return false;
@@ -36,13 +35,14 @@ public class HashMapIterator<T> : IMyIterator<T>
     {
         while (_bucketIndex < _buckets.Length)
         {
-            _itemIndex++;
+            if (_currentIterator == null)
+                _currentIterator = _buckets[_bucketIndex].GetIterator();
 
-            if (_itemIndex < _buckets[_bucketIndex].Count)
-                return _buckets[_bucketIndex][_itemIndex];
+            if (_currentIterator.HasNext())
+                return _currentIterator.Next();
 
             _bucketIndex++;
-            _itemIndex = -1;
+            _currentIterator = null;
         }
 
         throw new InvalidOperationException("No more elements.");
@@ -51,6 +51,6 @@ public class HashMapIterator<T> : IMyIterator<T>
     public void Reset()
     {
         _bucketIndex = 0;
-        _itemIndex = -1;
+        _currentIterator = null;
     }
 }
