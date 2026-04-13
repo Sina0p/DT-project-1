@@ -4,46 +4,36 @@ public class Repository : ITaskRepository
 {
     private const string FilePath = "data.json";
 
-    public IMyCollection<TaskItem> LoadTasks()
+    public void LoadTasks(IMyCollection<TaskItem> target)
     {
-        ArrayCollection<TaskItem> collection = new ArrayCollection<TaskItem>();
-
         if (!File.Exists(FilePath))
-            return collection;
+            return;
 
         string json = File.ReadAllText(FilePath);
         TaskItem[]? tasksArray = JsonSerializer.Deserialize<TaskItem[]>(json);
 
         if (tasksArray == null)
-            return collection;
+            return;
 
-        for (int i = 0; i < tasksArray.Length; i++)
+        foreach (TaskItem task in tasksArray)
         {
-            collection.Add(tasksArray[i]);
+            target.Add(task);
         }
 
-        collection.Dirty = false;
-        return collection;
+        target.Dirty = false;
     }
 
     public void SaveTasks(IMyCollection<TaskItem> tasks)
     {
-        ArrayCollection<TaskItem> ordered = new ArrayCollection<TaskItem>();
+        TaskItem[] array = new TaskItem[tasks.Count];
+        int index = 0;
 
         foreach (TaskItem task in tasks)
         {
-            ordered.Add(task);
-        }
-
-        ordered.Sort((a, b) => a.Id.CompareTo(b.Id));
-
-        TaskItem[] array = new TaskItem[ordered.Count];
-        int index = 0;
-
-        foreach (TaskItem task in ordered)
-        {
             array[index++] = task;
         }
+
+        Array.Sort(array, (a, b) => a.Id.CompareTo(b.Id));
 
         JsonSerializerOptions options = new JsonSerializerOptions
         {
