@@ -1,8 +1,11 @@
 public interface ITaskService
 {
-    bool AddTask(string name);
+    bool AddTask(string name, int priority);
     bool DeleteTask(int id);
     bool ToggleTask(int id);
-    bool TaskCheck();
+    bool UpdateTask(int id, string newName, int newPriority);
+
     void DisplayTasks();
+    void DisplayCompletedTasks();
+    void DisplayByPriority(int priority);
 }

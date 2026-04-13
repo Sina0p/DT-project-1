@@ -14,7 +14,7 @@ public class View
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("==== TO-DO LIST ====\n");
+            Console.WriteLine("==== TO-DO LIST ====");
 
             _service.DisplayTasks();
 
@@ -22,31 +22,26 @@ public class View
             Console.WriteLine("1. Add Task");
             Console.WriteLine("2. Delete Task");
             Console.WriteLine("3. Toggle Task");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Update Task");
+            Console.WriteLine("5. Show Completed Tasks");
+            Console.WriteLine("6. Filter by Priority");
+            Console.WriteLine("7. Exit");
 
             Console.Write("\nChoose option: ");
             string input = Console.ReadLine();
 
             switch (input)
             {
-                case "1":
-                    AddTask();
-                    break;
-
-                case "2":
-                    DeleteTask();
-                    break;
-
-                case "3":
-                    ToggleTask();
-                    break;
-
-                case "4":
-                    return;
-
+                case "1": AddTask(); break;
+                case "2": DeleteTask(); break;
+                case "3": ToggleTask(); break;
+                case "4": UpdateTask(); break;
+                case "5": _service.DisplayCompletedTasks(); Pause(); break;
+                case "6": FilterPriority(); break;
+                case "7": return;
                 default:
-                    Console.WriteLine("Invalid option. Press any key...");
-                    Console.ReadKey();
+                    Console.WriteLine("Invalid option");
+                    Pause();
                     break;
             }
         }
@@ -54,53 +49,69 @@ public class View
 
     private void AddTask()
     {
-        Console.Write("\nEnter task name: ");
+        Console.Write("Name: ");
         string name = Console.ReadLine();
 
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            _service.AddTask(name);
-        }
-        else
-        {
-            Console.WriteLine("Invalid input.");
-            Console.ReadKey();
-        }
+        Console.Write("Priority (1-5): ");
+        int.TryParse(Console.ReadLine(), out int priority);
+
+        _service.AddTask(name, priority);
     }
 
     private void DeleteTask()
     {
-        Console.Write("\nEnter task ID to delete: ");
-        if (int.TryParse(Console.ReadLine(), out int id))
+        Console.Write("ID: ");
+        int.TryParse(Console.ReadLine(), out int id);
+
+        if (!_service.DeleteTask(id))
         {
-            if (!_service.DeleteTask(id))
-            {
-                Console.WriteLine("Task not found.");
-                Console.ReadKey();
-            }
-        }
-        else
-        {
-            Console.WriteLine("Invalid ID.");
-            Console.ReadKey();
+            Console.WriteLine("Task not found");
+            Pause();
         }
     }
 
     private void ToggleTask()
     {
-        Console.Write("\nEnter task ID to toggle: ");
-        if (int.TryParse(Console.ReadLine(), out int id))
+        Console.Write("ID: ");
+        int.TryParse(Console.ReadLine(), out int id);
+
+        if (!_service.ToggleTask(id))
         {
-            if (!_service.ToggleTask(id))
-            {
-                Console.WriteLine("Task not found.");
-                Console.ReadKey();
-            }
+            Console.WriteLine("Task not found");
+            Pause();
         }
-        else
+    }
+
+    private void UpdateTask()
+    {
+        Console.Write("ID: ");
+        int.TryParse(Console.ReadLine(), out int id);
+
+        Console.Write("New name: ");
+        string name = Console.ReadLine();
+
+        Console.Write("New priority: ");
+        int.TryParse(Console.ReadLine(), out int priority);
+
+        if (!_service.UpdateTask(id, name, priority))
         {
-            Console.WriteLine("Invalid ID.");
-            Console.ReadKey();
+            Console.WriteLine("Task not found");
+            Pause();
         }
+    }
+
+    private void FilterPriority()
+    {
+        Console.Write("Priority: ");
+        int.TryParse(Console.ReadLine(), out int priority);
+
+        _service.DisplayByPriority(priority);
+        Pause();
+    }
+
+    private void Pause()
+    {
+        Console.WriteLine("Press any key...");
+        Console.ReadKey();
     }
 }
