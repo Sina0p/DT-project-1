@@ -31,3 +31,7 @@ ITaskService service = new Service(collection, repository);
 View view = new View(service);
 
 view.to_do_list();
+
+Console.WriteLine("\nClosing... changes will be saved.");
+service.Save(); 
+Console.WriteLine("Application closed.");

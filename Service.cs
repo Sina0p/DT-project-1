@@ -1,3 +1,5 @@
+using System;
+
 public class Service : ITaskService
 {
     private readonly IMyCollection<TaskItem> _collection;
@@ -12,10 +14,17 @@ public class Service : ITaskService
         _collection.Dirty = false;
     }
 
-    private void Save()
+    public void Save()
     {
         if (_collection.Dirty)
+        {
             _repository.SaveTasks(_collection);
+            Console.WriteLine("Changes saved to storage.");
+        }
+        else
+        {
+            Console.WriteLine("No changes detected (nothing to save).");
+        }
     }
 
     public bool AddTask(string name, int priority)
@@ -30,7 +39,6 @@ public class Service : ITaskService
         };
 
         _collection.Add(newTask);
-        Save();
         return true;
     }
 
@@ -40,7 +48,6 @@ public class Service : ITaskService
         if (task == null) return false;
 
         _collection.Remove(task);
-        Save();
         return true;
     }
 
@@ -51,7 +58,6 @@ public class Service : ITaskService
 
         task.Status = !task.Status;
         _collection.Dirty = true;
-        Save();
         return true;
     }
 
@@ -63,7 +69,6 @@ public class Service : ITaskService
         task.Name = newName;
         task.Priority = newPriority;
         _collection.Dirty = true;
-        Save();
         return true;
     }
 
