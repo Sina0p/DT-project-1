@@ -105,4 +105,46 @@ public class Service : ITaskService
             Console.WriteLine($"({task.Id}) {task.Name} | Priority: {task.Priority} | {task.CreationDate} | {status}");
         }
     }
+    public void DisplayKanban()
+    {
+        Console.Clear();
+        
+        var todoTasks = _collection.Filter(t => !t.Status);
+        var doneTasks = _collection.Filter(t => t.Status);
+
+        Console.WriteLine("\n========================== KANBAN VIEW ==========================");
+        Console.WriteLine("{0,-30} | {1,-30}", "TO DO", "DONE");
+        Console.WriteLine(new string('-', 65));
+
+        var todoList = ToArray(todoTasks);
+        var doneList = ToArray(doneTasks);
+
+        int maxRows = Math.Max(todoList.Length, doneList.Length);
+
+        for (int i = 0; i < maxRows; i++)
+        {
+            string todoEntry = i < todoList.Length 
+                ? $"[{todoList[i].Id}] {todoList[i].Name}" 
+                : "";
+            string doneEntry = i < doneList.Length 
+                ? $"[{doneList[i].Id}] {doneList[i].Name}" 
+                : "";
+
+            Console.WriteLine("{0,-30} | {1,-30}", Truncate(todoEntry, 28), Truncate(doneEntry, 28));
+        }
+        Console.WriteLine("-----------------------------------------------------------------\n");
+    }
+
+    private TaskItem[] ToArray(IMyCollection<TaskItem> col)
+    {
+        TaskItem[] arr = new TaskItem[col.Count];
+        int i = 0;
+        foreach (var item in col) arr[i++] = item;
+        return arr;
+    }
+
+    private string Truncate(string value, int max)
+    {
+        return value.Length <= max ? value : value.Substring(0, max - 3) + "...";
+    }
 }

@@ -9,4 +9,5 @@ public interface ITaskService
     void DisplayTasks();
     void DisplayCompletedTasks();
     void DisplayByPriority(int priority);
+    void DisplayKanban();
 }
