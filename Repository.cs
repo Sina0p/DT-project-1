@@ -25,6 +25,8 @@ public class Repository : ITaskRepository
 
     public void SaveTasks(IMyCollection<TaskItem> tasks)
     {
+        tasks.Sort((a, b) => a.Id.CompareTo(b.Id));
+
         TaskItem[] array = new TaskItem[tasks.Count];
         int index = 0;
 
@@ -32,8 +34,6 @@ public class Repository : ITaskRepository
         {
             array[index++] = task;
         }
-
-        Array.Sort(array, (a, b) => a.Id.CompareTo(b.Id));
 
         JsonSerializerOptions options = new JsonSerializerOptions
         {
