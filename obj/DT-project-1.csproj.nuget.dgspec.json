@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\DT_project\\DT-project-1\\DT-project-1.csproj": {}
+    "C:\\DT1\\DT-project-1\\DT-project-1.csproj": {}
   },
   "projects": {
-    "C:\\DT_project\\DT-project-1\\DT-project-1.csproj": {
+    "C:\\DT1\\DT-project-1\\DT-project-1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\DT_project\\DT-project-1\\DT-project-1.csproj",
+        "projectUniqueName": "C:\\DT1\\DT-project-1\\DT-project-1.csproj",
         "projectName": "DT-project-1",
-        "projectPath": "C:\\DT_project\\DT-project-1\\DT-project-1.csproj",
+        "projectPath": "C:\\DT1\\DT-project-1\\DT-project-1.csproj",
         "packagesPath": "C:\\Users\\sinah\\.nuget\\packages\\",
-        "outputPath": "C:\\DT_project\\DT-project-1\\obj\\",
+        "outputPath": "C:\\DT1\\DT-project-1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sinah\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
