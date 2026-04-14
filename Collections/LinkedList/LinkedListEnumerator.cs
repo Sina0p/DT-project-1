@@ -4,36 +4,36 @@ using System.Collections.Generic;
 
 public class LinkedListEnumerator<T> : IEnumerator<T>
 {
-    private LinkedListNode<T>? _eerste;
-    private LinkedListNode<T>? _huidig;
+    private LinkedListNode<T>? _first;
+    private LinkedListNode<T>? _current;
 
-    public LinkedListEnumerator(LinkedListNode<T>? eerste)
+    public LinkedListEnumerator(LinkedListNode<T>? first)
     {
-        _eerste = eerste;
-        _huidig = null;
+        _first = first;
+        _current = null;
     }
 
-    public T Current => _huidig!.Waarde;
+    public T Current => _current!.Value;
 
     object IEnumerator.Current => Current!;
 
     public bool MoveNext()
     {
-        if (_huidig == null)
+        if (_current == null)
         {
-            _huidig = _eerste;
+            _current = _first;
         }
         else
         {
-            _huidig = _huidig.Volgende;
+            _current = _current.Next;
         }
 
-        return _huidig != null;
+        return _current != null;
     }
 
     public void Reset()
     {
-        _huidig = null;
+        _current = null;
     }
 
     public void Dispose()

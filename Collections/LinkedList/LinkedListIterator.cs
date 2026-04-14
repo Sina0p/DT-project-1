@@ -3,32 +3,32 @@ using System;
 public class LinkedListIterator<T> : IMyIterator<T>
 {
     private LinkedListNode<T>? _start;
-    private LinkedListNode<T>? _huidig;
+    private LinkedListNode<T>? _current;
 
-    public LinkedListIterator(LinkedListNode<T>? eerste)
+    public LinkedListIterator(LinkedListNode<T>? first)
     {
-        _start = eerste;
-        _huidig = eerste;
+        _start = first;
+        _current = first;
     }
 
     public bool HasNext()
     {
-        return _huidig != null;
+        return _current != null;
     }
 
     public T Next()
     {
-        if (_huidig == null)
-            throw new InvalidOperationException("Geen elementen meer.");
+        if (_current == null)
+            throw new InvalidOperationException("No more elements.");
 
-        var waarde = _huidig.Waarde;
-        _huidig = _huidig.Volgende;
+        var value = _current.Value;
+        _current = _current.Next;
 
-        return waarde;
+        return value;
     }
 
     public void Reset()
     {
-        _huidig = _start;
+        _current = _start;
     }
 }

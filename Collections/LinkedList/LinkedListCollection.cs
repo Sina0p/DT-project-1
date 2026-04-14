@@ -4,170 +4,170 @@ using System.Collections.Generic;
 
 public class LinkedListCollection<T> : IMyCollection<T>, IEnumerable<T>
 {
-    private LinkedListNode<T>? _eerste;
-    private int _aantal;
+    private LinkedListNode<T>? _first;
+    private int _count;
 
-    public int Count => _aantal;
+    public int Count => _count;
     public bool Dirty { get; set; }
 
     public LinkedListCollection()
     {
-        _eerste = null;
-        _aantal = 0;
+        _first = null;
+        _count = 0;
         Dirty = false;
     }
 
     public void Add(T item)
     {
-        var nieuwKnooppunt = new LinkedListNode<T>(item);
+        var newNode = new LinkedListNode<T>(item);
 
-        if (_eerste == null)
+        if (_first == null)
         {
-            _eerste = nieuwKnooppunt;
+            _first = newNode;
         }
         else
         {
-            var huidig = _eerste;
+            var current = _first;
 
-            while (huidig.Volgende != null)
+            while (current.Next != null)
             {
-                huidig = huidig.Volgende;
+                current = current.Next;
             }
 
-            huidig.Volgende = nieuwKnooppunt;
+            current.Next = newNode;
         }
 
-        _aantal++;
+        _count++;
         Dirty = true;
     }
 
     public void Remove(T item)
     {
-        if (_eerste == null) return;
+        if (_first == null) return;
 
-        if (Equals(_eerste.Waarde, item))
+        if (Equals(_first.Value, item))
         {
-            _eerste = _eerste.Volgende;
-            _aantal--;
+            _first = _first.Next;
+            _count--;
             Dirty = true;
             return;
         }
 
-        var huidig = _eerste;
+        var current = _first;
 
-        while (huidig.Volgende != null)
+        while (current.Next != null)
         {
-            if (Equals(huidig.Volgende.Waarde, item))
+            if (Equals(current.Next.Value, item))
             {
-                huidig.Volgende = huidig.Volgende.Volgende;
-                _aantal--;
+                current.Next = current.Next.Next;
+                _count--;
                 Dirty = true;
                 return;
             }
 
-            huidig = huidig.Volgende;
+            current = current.Next;
         }
     }
 
-    public T FindBy<K>(K sleutel, Func<T, K, bool> vergelijker)
+    public T FindBy<K>(K key, Func<T, K, bool> comparer)
     {
-        var huidig = _eerste;
+        var current = _first;
 
-        while (huidig != null)
+        while (current != null)
         {
-            if (vergelijker(huidig.Waarde, sleutel))
-                return huidig.Waarde;
+            if (comparer(current.Value, key))
+                return current.Value;
 
-            huidig = huidig.Volgende;
+            current = current.Next;
         }
 
         return default!;
     }
 
-    public IMyCollection<T> Filter(Func<T, bool> voorwaarde)
+    public IMyCollection<T> Filter(Func<T, bool> condition)
     {
-        var resultaat = new LinkedListCollection<T>();
-        var huidig = _eerste;
+        var result = new LinkedListCollection<T>();
+        var current = _first;
 
-        while (huidig != null)
+        while (current != null)
         {
-            if (voorwaarde(huidig.Waarde))
+            if (condition(current.Value))
             {
-                resultaat.Add(huidig.Waarde);
+                result.Add(current.Value);
             }
 
-            huidig = huidig.Volgende;
+            current = current.Next;
         }
 
-        return resultaat;
+        return result;
     }
 
-    public void Sort(Comparison<T> vergelijking)
+    public void Sort(Comparison<T> comparison)
     {
-        if (_eerste == null) return;
+        if (_first == null) return;
 
-        bool gewisseld;
+        bool swapped;
 
         do
         {
-            gewisseld = false;
-            var huidig = _eerste;
+            swapped = false;
+            var current = _first;
 
-            while (huidig.Volgende != null)
+            while (current.Next != null)
             {
-                if (vergelijking(huidig.Waarde, huidig.Volgende.Waarde) > 0)
+                if (comparison(current.Value, current.Next.Value) > 0)
                 {
-                    T tijdelijk = huidig.Waarde;
-                    huidig.Waarde = huidig.Volgende.Waarde;
-                    huidig.Volgende.Waarde = tijdelijk;
+                    T temp = current.Value;
+                    current.Value = current.Next.Value;
+                    current.Next.Value = temp;
 
-                    gewisseld = true;
+                    swapped = true;
                 }
 
-                huidig = huidig.Volgende;
+                current = current.Next;
             }
 
-        } while (gewisseld);
+        } while (swapped);
 
         Dirty = true;
     }
 
     public R Reduce<R>(Func<R, T, R> accumulator)
     {
-        R resultaat = default!;
-        var huidig = _eerste;
+        R result = default!;
+        var current = _first;
 
-        while (huidig != null)
+        while (current != null)
         {
-            resultaat = accumulator(resultaat, huidig.Waarde);
-            huidig = huidig.Volgende;
+            result = accumulator(result, current.Value);
+            current = current.Next;
         }
 
-        return resultaat;
+        return result;
     }
 
-    public R Reduce<R>(R beginwaarde, Func<R, T, R> accumulator)
+    public R Reduce<R>(R initialValue, Func<R, T, R> accumulator)
     {
-        R resultaat = beginwaarde;
-        var huidig = _eerste;
+        R result = initialValue;
+        var current = _first;
 
-        while (huidig != null)
+        while (current != null)
         {
-            resultaat = accumulator(resultaat, huidig.Waarde);
-            huidig = huidig.Volgende;
+            result = accumulator(result, current.Value);
+            current = current.Next;
         }
 
-        return resultaat;
+        return result;
     }
 
     public IMyIterator<T> GetIterator()
     {
-        return new LinkedListIterator<T>(_eerste);
+        return new LinkedListIterator<T>(_first);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return new LinkedListEnumerator<T>(_eerste);
+        return new LinkedListEnumerator<T>(_first);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

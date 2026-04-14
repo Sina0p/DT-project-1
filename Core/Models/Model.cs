@@ -17,12 +17,12 @@ public class TaskItem
 
 public class LinkedListNode<T>
 {
-    public T Waarde { get; set; }
-    public LinkedListNode<T>? Volgende { get; set; }
+    public T Value { get; set; }
+    public LinkedListNode<T>? Next { get; set; }
 
-    public LinkedListNode(T waarde)
+    public LinkedListNode(T value)
     {
-        Waarde = waarde;
-        Volgende = null;
+        Value = value;
+        Next = null;
     }
 }
