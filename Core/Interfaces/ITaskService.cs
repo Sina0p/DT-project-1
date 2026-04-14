@@ -1,5 +1,6 @@
 public interface ITaskService
 {
+    void Save();
     bool AddTask(string name, int priority);
     bool DeleteTask(int id);
     bool ToggleTask(int id);

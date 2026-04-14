@@ -25,7 +25,8 @@ public class View
             Console.WriteLine("4. Update Task");
             Console.WriteLine("5. Show Completed Tasks");
             Console.WriteLine("6. Filter by Priority");
-            Console.WriteLine("7. Exit");
+            Console.WriteLine("7. Save Changes");
+            Console.WriteLine("8. Exit");
 
             Console.Write("\nChoose option: ");
             string input = Console.ReadLine();
@@ -38,7 +39,8 @@ public class View
                 case "4": UpdateTask(); break;
                 case "5": _service.DisplayCompletedTasks(); Pause(); break;
                 case "6": FilterPriority(); break;
-                case "7": return;
+                case "7": _service.Save(); Pause(); break;
+                case "8": return;
                 default:
                     Console.WriteLine("Invalid option");
                     Pause();
