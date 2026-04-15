@@ -1,3 +1,12 @@
+Console.WriteLine("Run tests? (y/n)");
+string? runTests = Console.ReadLine();
+
+if (runTests?.ToLower() == "y")
+{
+    RunTests();
+    return;
+}
+
 Console.WriteLine("Choose collection type:");
 Console.WriteLine("1. Array");
 Console.WriteLine("2. Linked List");
@@ -28,5 +37,25 @@ View view = new View(service);
 view.to_do_list();
 
 Console.WriteLine("\nClosing... changes will be saved.");
-service.Save(); 
+service.Save();
 Console.WriteLine("Application closed.");
+
+
+void RunTests()
+{
+    Console.WriteLine("Running tests...\n");
+
+    try
+    {
+        ServiceTests.AddTask_ShouldAssignIncrementedId();
+        ServiceTests.Test_DeleteTask_ShouldRemoveExistingTask();
+        ServiceTests.Test_DeleteTask_ShouldReturnFalse_WhenNotFound();
+        ServiceTests.Test_ToggleTask_ShouldFlipStatus();
+        ServiceTests.Test_UpdateTask_ShouldUpdateFields();
+        Console.WriteLine("All tests passed!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+}
