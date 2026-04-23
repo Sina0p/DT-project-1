@@ -1,17 +1,38 @@
 using System;
+using System.Text.Json;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Service : ITaskService
 {
     private readonly IMyCollection<TaskItem> _collection;
     private readonly ITaskRepository _repository;
+    private List<User> _users;
 
     public Service(IMyCollection<TaskItem> collection, ITaskRepository repository)
     {
         _collection = collection;
         _repository = repository;
+        _users = LoadUsers();
 
         _repository.LoadTasks(_collection);
         _collection.Dirty = false;
+    }
+
+    private List<User> LoadUsers()
+    {
+        string filePath = "user.json";
+        if (!File.Exists(filePath)) return new List<User>();
+        
+        string json = File.ReadAllText(filePath);
+        
+        return JsonSerializer.Deserialize<List<User>>(json) ?? new List<User>();
+    }
+
+    public User? ValidateUser(string username, string password)
+    {
+        return _users.FirstOrDefault(u => u.Username == username && u.Password == password);
     }
 
     public void Save()
@@ -33,11 +54,7 @@ public class Service : ITaskService
             ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max)
             : -1;
 
-        TaskItem newTask = new TaskItem(maxId + 1, name)
-        {
-            Priority = priority
-        };
-
+        TaskItem newTask = new TaskItem(maxId + 1, name) { Priority = priority };
         _collection.Add(newTask);
         return true;
     }
@@ -46,7 +63,6 @@ public class Service : ITaskService
     {
         TaskItem task = _collection.FindBy(id, (t, key) => t.Id == key);
         if (task == null) return false;
-
         _collection.Remove(task);
         return true;
     }
@@ -55,7 +71,6 @@ public class Service : ITaskService
     {
         TaskItem task = _collection.FindBy(id, (t, key) => t.Id == key);
         if (task == null) return false;
-
         task.Status = !task.Status;
         _collection.Dirty = true;
         return true;
@@ -65,7 +80,6 @@ public class Service : ITaskService
     {
         TaskItem task = _collection.FindBy(id, (t, key) => t.Id == key);
         if (task == null) return false;
-
         task.Name = newName;
         task.Priority = newPriority;
         _collection.Dirty = true;
@@ -76,7 +90,6 @@ public class Service : ITaskService
     {
         var ordered = _collection.Filter(t => true);
         ordered.Sort((a, b) => a.Id.CompareTo(b.Id));
-
         foreach (var task in ordered)
         {
             string status = task.Status ? "Done" : "Not Done";
@@ -87,28 +100,25 @@ public class Service : ITaskService
     public void DisplayCompletedTasks()
     {
         var filtered = _collection.Filter(t => t.Status);
-
         foreach (var task in filtered)
         {
-            string status = task.Status ? "Done" : "Not Done";
-            Console.WriteLine($"({task.Id}) {task.Name} | Priority: {task.Priority} | {task.CreationDate} | {status}");
+            Console.WriteLine($"({task.Id}) {task.Name} | Priority: {task.Priority} | {task.CreationDate} | Done");
         }
     }
 
     public void DisplayByPriority(int priority)
     {
         var filtered = _collection.Filter(t => t.Priority == priority);
-
         foreach (var task in filtered)
         {
             string status = task.Status ? "Done" : "Not Done";
             Console.WriteLine($"({task.Id}) {task.Name} | Priority: {task.Priority} | {task.CreationDate} | {status}");
         }
     }
+
     public void DisplayKanban()
     {
         Console.Clear();
-        
         var todoTasks = _collection.Filter(t => !t.Status);
         var doneTasks = _collection.Filter(t => t.Status);
 
@@ -118,18 +128,12 @@ public class Service : ITaskService
 
         var todoList = ToArray(todoTasks);
         var doneList = ToArray(doneTasks);
-
         int maxRows = Math.Max(todoList.Length, doneList.Length);
 
         for (int i = 0; i < maxRows; i++)
         {
-            string todoEntry = i < todoList.Length 
-                ? $"[{todoList[i].Id}] {todoList[i].Name}" 
-                : "";
-            string doneEntry = i < doneList.Length 
-                ? $"[{doneList[i].Id}] {doneList[i].Name}" 
-                : "";
-
+            string todoEntry = i < todoList.Length ? $"[{todoList[i].Id}] {todoList[i].Name}" : "";
+            string doneEntry = i < doneList.Length ? $"[{doneList[i].Id}] {doneList[i].Name}" : "";
             Console.WriteLine("{0,-30} | {1,-30}", Truncate(todoEntry, 28), Truncate(doneEntry, 28));
         }
         Console.WriteLine("-----------------------------------------------------------------\n");
