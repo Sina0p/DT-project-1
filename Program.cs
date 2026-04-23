@@ -1,3 +1,5 @@
+using System;
+
 Console.WriteLine("Run tests? (y/n)");
 string? runTests = Console.ReadLine();
 
@@ -7,6 +9,7 @@ if (runTests?.ToLower() == "y")
     return;
 }
 
+Console.Clear();
 Console.WriteLine("Choose collection type:");
 Console.WriteLine("1. Array");
 Console.WriteLine("2. Linked List");
@@ -34,12 +37,17 @@ ITaskRepository repository = new Repository();
 ITaskService service = new Service(collection, repository);
 View view = new View(service);
 
+if (!view.Login())
+{
+    Console.WriteLine("\nProgram terminated due to failed login.");
+    return; 
+}
+
 view.to_do_list();
 
 Console.WriteLine("\nClosing... changes will be saved.");
 service.Save();
 Console.WriteLine("Application closed.");
-
 
 void RunTests()
 {
@@ -56,6 +64,6 @@ void RunTests()
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message);
+        Console.WriteLine($"Test failed: {ex.Message}");
     }
 }
