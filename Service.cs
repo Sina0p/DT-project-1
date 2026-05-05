@@ -9,6 +9,7 @@ public class Service : ITaskService
     private readonly IMyCollection<TaskItem> _collection;
     private readonly ITaskRepository _repository;
     private List<User> _users;
+    private int _nextTaskId;
 
     public Service(IMyCollection<TaskItem> collection, ITaskRepository repository)
     {
@@ -17,6 +18,11 @@ public class Service : ITaskService
         _users = LoadUsers();
 
         _repository.LoadTasks(_collection);
+
+        _nextTaskId = _collection.Count > 0
+            ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max) + 1
+            : 1;
+
         _collection.Dirty = false;
     }
 
@@ -50,11 +56,13 @@ public class Service : ITaskService
 
     public bool AddTask(string name, int priority)
     {
-        int maxId = _collection.Count > 0
-            ? _collection.Reduce(0, (max, t) => t.Id > max ? t.Id : max)
-            : -1;
+        TaskItem newTask = new TaskItem(_nextTaskId, name)
+        {
+            Priority = priority
+        };
 
-        TaskItem newTask = new TaskItem(maxId + 1, name) { Priority = priority };
+        _nextTaskId++;
+
         _collection.Add(newTask);
         return true;
     }
