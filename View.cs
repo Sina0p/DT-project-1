@@ -3,6 +3,7 @@ using System;
 public class View
 {
     private readonly ITaskService _service;
+    private bool _isKanbanMode = false;
 
     public View(ITaskService service)
     {
@@ -22,7 +23,7 @@ public class View
 
         if (user != null)
         {
-            Console.WriteLine($"\nSuccess! Welcome {user.Username}.");
+            Console.WriteLine($"\nWelcome {user.Username}.");
             Pause();
             return true;
         }
@@ -36,8 +37,15 @@ public class View
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("==== TO-DO LIST ====");
-            _service.DisplayTasks();
+            if (_isKanbanMode)
+            {
+                _service.DisplayKanban();
+            }
+            else
+            {
+                Console.WriteLine("==== TO-DO LIST ====");
+                _service.DisplayTasks();
+            }
 
             Console.WriteLine("\nOptions:");
             Console.WriteLine("1. Add Task");
@@ -46,7 +54,7 @@ public class View
             Console.WriteLine("4. Update Task");
             Console.WriteLine("5. Show Completed Tasks");
             Console.WriteLine("6. Filter by Priority");
-            Console.WriteLine("7. Kanban View");
+            Console.WriteLine(_isKanbanMode ? "7. Toggle List View" : "7. Toggle Kanban View");
             Console.WriteLine("8. Save Changes");
             Console.WriteLine("9. Exit");
 
@@ -61,7 +69,7 @@ public class View
                 case "4": UpdateTask(); break;
                 case "5": _service.DisplayCompletedTasks(); Pause(); break;
                 case "6": FilterPriority(); break;
-                case "7": _service.DisplayKanban(); Pause(); break;
+                case "7": _isKanbanMode = !_isKanbanMode; break;
                 case "8": _service.Save(); Pause(); break;
                 case "9": return;
                 default:
