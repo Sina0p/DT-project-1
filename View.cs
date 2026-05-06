@@ -74,19 +74,21 @@ public class View
         Console.WriteLine("4. Update Task");
         Console.WriteLine("5. Show Completed Tasks");
         Console.WriteLine("6. Filter by Priority");
-        Console.WriteLine(_isKanbanMode ? "7. Toggle List View" : "7. Toggle Kanban View");
-        Console.WriteLine("8. Save Changes");
-        Console.WriteLine("9. Exit");
+        Console.WriteLine("7. Filter by Status");
+        Console.WriteLine(_isKanbanMode ? "8. Toggle List View" : "8. Toggle Kanban View");
+        Console.WriteLine("9. Save Changes");
+        Console.WriteLine("10. Exit");
     }
 
     private void DisplayEmployeeMenu()
     {
-        Console.WriteLine("1. Toggle Task Status");
+        Console.WriteLine("1. Change Task Status");
         Console.WriteLine("2. Show Completed Tasks");
         Console.WriteLine("3. Filter by Priority");
-        Console.WriteLine(_isKanbanMode ? "4. Toggle List View" : "4. Toggle Kanban View");
-        Console.WriteLine("5. Save Changes");
-        Console.WriteLine("6. Exit");
+        Console.WriteLine("4. Filter by Status");
+        Console.WriteLine(_isKanbanMode ? "5. Toggle List View" : "5. Toggle Kanban View");
+        Console.WriteLine("6. Save Changes");
+        Console.WriteLine("7. Exit");
     }
 
     private bool HandleAdminInput()
@@ -98,13 +100,14 @@ public class View
         {
             case "1": AddTask(); break;
             case "2": DeleteTask(); break;
-            case "3": ToggleTask(); break;
+            case "3": ChangeTaskStatus(); break;
             case "4": UpdateTask(); break;
             case "5": _service.DisplayCompletedTasks(); Pause(); break;
             case "6": FilterPriority(); break;
-            case "7": _isKanbanMode = !_isKanbanMode; break;
-            case "8": _service.Save(); Pause(); break;
-            case "9": return true;
+            case "7": FilterStatus(); break;
+            case "8": _isKanbanMode = !_isKanbanMode; break;
+            case "9": _service.Save(); Pause(); break;
+            case "10": return true;
             default: Console.WriteLine("Invalid option"); Pause(); break;
         }
         return false;
@@ -117,12 +120,13 @@ public class View
 
         switch (input)
         {
-            case "1": ToggleTask(); break;
+            case "1": ChangeTaskStatus(); break;
             case "2": _service.DisplayCompletedTasks(); Pause(); break;
             case "3": FilterPriority(); break;
-            case "4": _isKanbanMode = !_isKanbanMode; break;
-            case "5": _service.Save(); Pause(); break;
-            case "6": return true;
+            case "4": FilterStatus(); break;
+            case "5": _isKanbanMode = !_isKanbanMode; break;
+            case "6": _service.Save(); Pause(); break;
+            case "7": return true;
             default: Console.WriteLine("Invalid option"); Pause(); break;
         }
         return false;
@@ -144,11 +148,24 @@ public class View
         if (!_service.DeleteTask(id)) { Console.WriteLine("Task not found"); Pause(); }
     }
 
-    private void ToggleTask()
+    private void ChangeTaskStatus()
     {
-        Console.Write("ID to toggle: ");
+        Console.Write("ID: ");
         int.TryParse(Console.ReadLine(), out int id);
-        if (!_service.ToggleTask(id)) { Console.WriteLine("Task not found"); Pause(); }
+
+        TaskStatus? status = ReadStatusFromUser();
+        if (status == null)
+        {
+            Console.WriteLine("Invalid status");
+            Pause();
+            return;
+        }
+
+        if (!_service.SetTaskStatus(id, status.Value))
+        {
+            Console.WriteLine("Task not found");
+            Pause();
+        }
     }
 
     private void UpdateTask()
@@ -168,6 +185,39 @@ public class View
         int.TryParse(Console.ReadLine(), out int priority);
         _service.DisplayByPriority(priority);
         Pause();
+    }
+
+    private void FilterStatus()
+    {
+        TaskStatus? status = ReadStatusFromUser();
+        if (status == null)
+        {
+            Console.WriteLine("Invalid status");
+            Pause();
+            return;
+        }
+
+        _service.DisplayByStatus(status.Value);
+        Pause();
+    }
+
+    private TaskStatus? ReadStatusFromUser()
+    {
+        Console.WriteLine("Choose status:");
+        Console.WriteLine("1. Not Done");
+        Console.WriteLine("2. In Progress");
+        Console.WriteLine("3. Done");
+        Console.Write("Status: ");
+
+        string input = Console.ReadLine() ?? "";
+
+        return input switch
+        {
+            "1" => TaskStatus.NotDone,
+            "2" => TaskStatus.InProgress,
+            "3" => TaskStatus.Done,
+            _ => null
+        };
     }
 
     private void Pause()

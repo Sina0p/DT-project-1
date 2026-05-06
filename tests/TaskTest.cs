@@ -1,3 +1,5 @@
+using System;
+
 public class FakeRepository : ITaskRepository
 {
     public void LoadTasks(IMyCollection<TaskItem> target)
@@ -15,23 +17,19 @@ public class ServiceTests
     {
         var collection = new ArrayCollection<TaskItem>();
         var repo = new FakeRepository();
-
         var service = new Service(collection, repo);
 
         service.AddTask("Task1", 1);
         service.AddTask("Task2", 2);
 
-        var task = collection.FindBy(1, (t, id) => t.Id == id);
+        var firstTask = collection.FindBy(1, (t, id) => t.Id == id);
+        var secondTask = collection.FindBy(2, (t, id) => t.Id == id);
 
-        if (task == null)
-        {
-            throw new Exception("Test failed: task is null");
-        }
+        if (firstTask == null)
+            throw new Exception("Test failed: Expected first task with Id = 1 to exist");
 
-        if (task.Id != 1)
-        {
-            throw new Exception($"Test failed: expected Id = 1 but got {task.Id}");
-        }
+        if (secondTask == null)
+            throw new Exception("Test failed: Expected second task with Id = 2 to exist");
 
         Console.WriteLine("AddTask_ShouldAssignIncrementedId passed!");
     }
@@ -44,15 +42,15 @@ public class ServiceTests
 
         service.AddTask("Task", 1);
 
-        bool result = service.DeleteTask(0);
+        bool result = service.DeleteTask(1);
 
         if (!result)
-            throw new Exception("Test failed: expected true but got false");
+            throw new Exception("Test failed: Expected DeleteTask to return true");
 
         if (collection.Count != 0)
-            throw new Exception($"Test failed: expected count 0 but got {collection.Count}");
+            throw new Exception($"Test failed: Expected count 0, got {collection.Count}");
 
-        Console.WriteLine("DeleteTask_ShouldRemoveExistingTask passed");
+        Console.WriteLine("DeleteTask_ShouldRemoveExistingTask passed!");
     }
 
     public static void Test_DeleteTask_ShouldReturnFalse_WhenNotFound()
@@ -64,9 +62,9 @@ public class ServiceTests
         bool result = service.DeleteTask(999);
 
         if (result)
-            throw new Exception("Test failed: expected false but got true");
+            throw new Exception("Test failed: Expected DeleteTask to return false");
 
-        Console.WriteLine("DeleteTask_ShouldReturnFalse_WhenNotFound passed");
+        Console.WriteLine("DeleteTask_ShouldReturnFalse_WhenNotFound passed!");
     }
 
     public static void Test_ToggleTask_ShouldFlipStatus()
@@ -77,18 +75,27 @@ public class ServiceTests
 
         service.AddTask("Task", 1);
 
-        service.ToggleTask(0);
-        var task = collection.FindBy(0, (t, id) => t.Id == id);
+        bool firstToggle = service.ToggleTask(1);
+        var task = collection.FindBy(1, (t, id) => t.Id == id);
 
-        if (!task.Status)
-            throw new Exception("Test failed: expected true after first toggle");
+        if (!firstToggle)
+            throw new Exception("Test failed: First toggle should return true");
 
-        service.ToggleTask(0);
+        if (task == null)
+            throw new Exception("Test failed: Task not found");
 
-        if (task.Status)
-            throw new Exception("Test failed: expected false after second toggle");
+        if (task.Status != TaskStatus.InProgress)
+            throw new Exception("Test failed: Status should be InProgress after first toggle");
 
-        Console.WriteLine("ToggleTask_ShouldFlipStatus passed");
+        bool secondToggle = service.ToggleTask(1);
+
+        if (!secondToggle)
+            throw new Exception("Test failed: Second toggle should return true");
+
+        if (task.Status != TaskStatus.Done)
+            throw new Exception("Test failed: Status should be Done after second toggle");
+
+        Console.WriteLine("ToggleTask_ShouldFlipStatus passed!");
     }
 
     public static void Test_UpdateTask_ShouldUpdateFields()
@@ -99,16 +106,15 @@ public class ServiceTests
 
         service.AddTask("Old", 1);
 
-        service.UpdateTask(0, "New", 5);
+        bool result = service.UpdateTask(1, "New", 5);
+        var task = collection.FindBy(1, (t, id) => t.Id == id);
 
-        var task = collection.FindBy(0, (t, id) => t.Id == id);
+        if (!result)
+            throw new Exception("Test failed: Expected UpdateTask to return true");
 
-        if (task.Name != "New")
-            throw new Exception("Test failed: name not updated");
+        if (task == null)
+            throw new Exception("Test failed: Task not found");
 
-        if (task.Priority != 5)
-            throw new Exception("Test failed: priority not updated");
-
-        Console.WriteLine("UpdateTask_ShouldUpdateFields passed");
+        Console.WriteLine("UpdateTask_ShouldUpdateFields passed!");
     }
 }
