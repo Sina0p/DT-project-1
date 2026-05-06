@@ -2,11 +2,11 @@
   {
     "Username": "admin",
     "Password": "password123",
-    "IsEmployee": true
+    "IsEmployee": false
   },
   {
-    "Username": "test_user",
-    "Password": "123",
+    "Username": "employee",
+    "Password": "password123",
     "IsEmployee": true
   }
 ]
