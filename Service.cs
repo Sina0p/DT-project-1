@@ -126,11 +126,10 @@ public class Service : ITaskService
 
     public void DisplayKanban()
     {
-        Console.Clear();
         var todoTasks = _collection.Filter(t => !t.Status);
         var doneTasks = _collection.Filter(t => t.Status);
 
-        Console.WriteLine("\n========================== KANBAN VIEW ==========================");
+        Console.WriteLine("========================== KANBAN VIEW ==========================");
         Console.WriteLine("{0,-30} | {1,-30}", "TO DO", "DONE");
         Console.WriteLine(new string('-', 65));
 
@@ -144,7 +143,7 @@ public class Service : ITaskService
             string doneEntry = i < doneList.Length ? $"[{doneList[i].Id}] {doneList[i].Name}" : "";
             Console.WriteLine("{0,-30} | {1,-30}", Truncate(todoEntry, 28), Truncate(doneEntry, 28));
         }
-        Console.WriteLine("-----------------------------------------------------------------\n");
+        Console.WriteLine("-----------------------------------------------------------------");
     }
 
     private TaskItem[] ToArray(IMyCollection<TaskItem> col)
