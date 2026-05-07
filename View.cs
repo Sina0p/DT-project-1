@@ -82,7 +82,7 @@ public class View
 
     private void DisplayEmployeeMenu()
     {
-        Console.WriteLine("1. Change Task Status");
+        Console.WriteLine("1. Toggle Task Status");
         Console.WriteLine("2. Show Completed Tasks");
         Console.WriteLine("3. Filter by Priority");
         Console.WriteLine("4. Filter by Status");
@@ -100,7 +100,7 @@ public class View
         {
             case "1": AddTask(); break;
             case "2": DeleteTask(); break;
-            case "3": ChangeTaskStatus(); break;
+            case "3": ToggleTask(); break;
             case "4": UpdateTask(); break;
             case "5": _service.DisplayCompletedTasks(); Pause(); break;
             case "6": FilterPriority(); break;
@@ -120,7 +120,7 @@ public class View
 
         switch (input)
         {
-            case "1": ChangeTaskStatus(); break;
+            case "1": ToggleTask(); break;
             case "2": _service.DisplayCompletedTasks(); Pause(); break;
             case "3": FilterPriority(); break;
             case "4": FilterStatus(); break;
@@ -148,20 +148,11 @@ public class View
         if (!_service.DeleteTask(id)) { Console.WriteLine("Task not found"); Pause(); }
     }
 
-    private void ChangeTaskStatus()
+    private void ToggleTask()
     {
-        Console.Write("ID: ");
+        Console.Write("ID of task to toggle: ");
         int.TryParse(Console.ReadLine(), out int id);
-
-        TaskStatus? status = ReadStatusFromUser();
-        if (status == null)
-        {
-            Console.WriteLine("Invalid status");
-            Pause();
-            return;
-        }
-
-        if (!_service.SetTaskStatus(id, status.Value))
+        if (!_service.ToggleTask(id))
         {
             Console.WriteLine("Task not found");
             Pause();
